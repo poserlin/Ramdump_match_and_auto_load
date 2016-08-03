@@ -12,8 +12,6 @@ import subprocess
 import shutil
 import zipfile
 
-from lxml import etree
-from lxml import html
 
 
 #========================================================== 
@@ -143,21 +141,14 @@ Temp_Elf_folder = r'D:\M1\dump\ELF_temp'
 
 
 ELF_file_location = 0
-#Radio_release_root = r'C:\Users\poser_lin\Desktop\QXDM_log'
-#BIN_file_location = r'\\wsd-abs-w2b-2\David\S1_M1_ITS\268\Ramdump_HT6560300026_20160517035548\DDRCS0.bin'
-#Radio_version = '8996-011002-1605051809'
-
-
 
 #========================================================== 
 # Main function
 #==========================================================  
 
-# BIN_file_location = input("Plz input DDRCS0.BIN: \r\n")
-# Radio_version = input("Plz input Radio version: ")
+BIN_file_location = input("Plz input DDRCS0.BIN: \r\n")
+Radio_version = input("Plz input Radio version: ")
 
-BIN_file_location = r'D:\M1\dump\mpss.bin'
-Radio_version = r'8996-012301-1607231823'
 Radio_version_list = Radio_version.split('-')
 
 ELF_file_location = 0

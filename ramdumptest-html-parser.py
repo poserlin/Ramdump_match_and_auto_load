@@ -104,7 +104,6 @@ def search_elf_local(Radio_version_list, search_dir):
     for dirPath, dirNames, fileNames in os.walk(search_dir):   
         for x in fileNames:
             if fnmatch.fnmatch(x, '*'+Radio_version_part+'_fin.elf'):
-                print('dirpath', dirPath)
                 ELF_file = os.path.join(dirPath, x)
                 print('Match ELF locally in  \r\n %s' %ELF_file)
                 return ELF_file 
@@ -192,9 +191,9 @@ else:
     print('>>> Loading Ramdump by T32......')
     os.system(T32_full_path + ' -s ' +write_loadsim_cmm_all)
 
-    case_number = input("Case#?, empty for skip the zip process: \r\n")
+    case_number = input(">>> Input Case number for zip file, empty for skip the zip process: \r\n")
     if case_number != '':
-        print('Zip everything for case#',case_number)
+        print('>>> Zip everything for case#',case_number)
       
         os.chdir(os.path.dirname(BIN_file_location))
         with open('coredump.txt', 'r') as input_file:

@@ -16,11 +16,17 @@ import zipfile
 #========================================================== 
 # User Variable
 #==========================================================
-Codebase_root_folder = r'D:\codebase\8996\8996_AND_LA_1.9_12301_UMTS_29.01_0726_c0e35ff_189'
-Radio_release_root = r'\\10.116.56.36\Release'
-T32_full_path = r'D:\M1\T32_D\bin\windows64\t32mqdsp6'
-Temp_Elf_folder = r'D:\M1\dump\ELF_temp'
 
+with open('config.txt', 'r') as config_file:
+    for line in config_file:
+        if 'Codebase_root_folder' in line:
+            Codebase_root_folder = line.rstrip().split('= ')[1]
+        elif 'Radio_release_root' in line:
+            Radio_release_root = line.rstrip().split('= ')[1]
+        elif 'T32_full_path' in line:
+            T32_full_path = line.rstrip().split('= ')[1]
+        elif 'Temp_Elf_folder' in line:
+            Temp_Elf_folder = line.rstrip().split('= ')[1]
 #========================================================== 
 # Function declarification
 #==========================================================

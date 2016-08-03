@@ -13,6 +13,13 @@ import shutil
 import zipfile
 
 
+#========================================================== 
+# User Variable
+#==========================================================
+Codebase_root_folder = r'D:\codebase\8996\8996_AND_LA_1.9_12301_UMTS_29.01_0726_c0e35ff_189'
+Radio_release_root = r'\\10.116.56.36\Release'
+T32_full_path = r'D:\M1\T32_D\bin\windows64\t32mqdsp6'
+Temp_Elf_folder = r'D:\M1\dump\ELF_temp'
 
 #========================================================== 
 # Function declarification
@@ -116,7 +123,7 @@ def update_cmm(read_cmm, write_cmm, replace_target, replace_object):
 #==========================================================
 cmm_path = r'\common\Core\tools\cmm\common\msm8996'
 
-Codebase_root_folder = r'D:\codebase\8996\8996_AND_LA_1.9_12301_UMTS_29.01_0726_c0e35ff_189'
+
 
 read_loadsim_cmm = r'\std_loadsim_mpss_htc_8996.cmm'
 write_loadsim_cmm = r'\std_loadsim_mpss_htc_8996_poser_out.cmm'
@@ -135,12 +142,6 @@ write_loadsyms_cmm_all = Codebase_root_folder+cmm_path+write_loadsyms_cmm
 
 read_recover_f3_cmm_all = Codebase_root_folder+cmm_path+read_recover_f3_cmm
 write_recover_f3_cmm_all = Codebase_root_folder+cmm_path+write_recover_f3_cmm
-
-Radio_release_root = r'\\10.116.56.36\Release'
-T32_full_path = r'D:\M1\T32_D\bin\windows64\t32mqdsp6'
-Temp_Elf_folder = r'D:\M1\dump\ELF_temp'
-
-
 
 
 ELF_file_location = 0

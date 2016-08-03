@@ -12,10 +12,21 @@ import subprocess
 import shutil
 import zipfile
 
-from lxml import etree
-from lxml import html
 
+#========================================================== 
+# User Variable
+#==========================================================
 
+with open('config.txt', 'r') as config_file:
+    for line in config_file:
+        if 'Codebase_root_folder' in line:
+            Codebase_root_folder = line.rstrip().split('= ')[1]
+        elif 'Radio_release_root' in line:
+            Radio_release_root = line.rstrip().split('= ')[1]
+        elif 'T32_full_path' in line:
+            T32_full_path = line.rstrip().split('= ')[1]
+        elif 'Temp_Elf_folder' in line:
+            Temp_Elf_folder = line.rstrip().split('= ')[1]
 #========================================================== 
 # Function declarification
 #==========================================================
@@ -63,7 +74,7 @@ def search_elf_remote(Radio_str, Radio_release_root):
         if not os.path.exists(os.path.dirname(Local_ELF_file_location)):
             os.mkdir(os.path.dirname(Local_ELF_file_location))
         
-        print('>>>>>>Found, Copy file from SSD server......')
+        print('>>> Found, Copy file from SSD server......')
         shutil.copy(ELF_file_remote_location, Local_ELF_file_location)
         shutil.copy(ELF_2_msghash(ELF_file_remote_location), ELF_2_msghash(Local_ELF_file_location))
         
@@ -72,9 +83,12 @@ def search_elf_remote(Radio_str, Radio_release_root):
             return 0
         else:
             print('>>>>>>Finish copying......')
-            os.replace(Local_ELF_file_location, os.path.splitext(Local_ELF_file_location)[0]+'_fin'+os.path.splitext(Local_ELF_file_location)[1])
-            print('Local_ELF_file_location', Local_ELF_file_location)
-            return Local_ELF_file_location
+            add_fin = lambda input_address: os.path.splitext(input_address)[0]+'_fin'+os.path.splitext(input_address)[1]
+            
+            Local_ELF_file_location_fin = add_fin(Local_ELF_file_location)
+            os.rename(Local_ELF_file_location, Local_ELF_file_location_fin)
+            print('Local_ELF_file_location', Local_ELF_file_location_fin)
+            return Local_ELF_file_location_fin
 
     
 #Define the local Search
@@ -90,7 +104,6 @@ def search_elf_local(Radio_version_list, search_dir):
     for dirPath, dirNames, fileNames in os.walk(search_dir):   
         for x in fileNames:
             if fnmatch.fnmatch(x, '*'+Radio_version_part+'_fin.elf'):
-                print('dirpath', dirPath)
                 ELF_file = os.path.join(dirPath, x)
                 print('Match ELF locally in  \r\n %s' %ELF_file)
                 return ELF_file 
@@ -115,7 +128,7 @@ def update_cmm(read_cmm, write_cmm, replace_target, replace_object):
 #==========================================================
 cmm_path = r'\common\Core\tools\cmm\common\msm8996'
 
-Codebase_root_folder = r'D:\codebase\8996\8996_AND_LA_1.9_12301_UMTS_29.01_0726_c0e35ff_189'
+
 
 read_loadsim_cmm = r'\std_loadsim_mpss_htc_8996.cmm'
 write_loadsim_cmm = r'\std_loadsim_mpss_htc_8996_poser_out.cmm'
@@ -135,29 +148,16 @@ write_loadsyms_cmm_all = Codebase_root_folder+cmm_path+write_loadsyms_cmm
 read_recover_f3_cmm_all = Codebase_root_folder+cmm_path+read_recover_f3_cmm
 write_recover_f3_cmm_all = Codebase_root_folder+cmm_path+write_recover_f3_cmm
 
-Radio_release_root = r'\\10.116.56.36\Release'
-T32_full_path = r'D:\M1\T32_D\bin\windows64\t32mqdsp6'
-Temp_Elf_folder = r'D:\M1\dump\ELF_temp'
-
-
-
 
 ELF_file_location = 0
-#Radio_release_root = r'C:\Users\poser_lin\Desktop\QXDM_log'
-#BIN_file_location = r'\\wsd-abs-w2b-2\David\S1_M1_ITS\268\Ramdump_HT6560300026_20160517035548\DDRCS0.bin'
-#Radio_version = '8996-011002-1605051809'
-
-
 
 #========================================================== 
 # Main function
 #==========================================================  
 
-# BIN_file_location = input("Plz input DDRCS0.BIN: \r\n")
-# Radio_version = input("Plz input Radio version: ")
+BIN_file_location = input("Plz input DDRCS0.BIN: \r\n")
+Radio_version = input("Plz input Radio version: ")
 
-BIN_file_location = r'D:\M1\dump\mpss.bin'
-Radio_version = r'8996-012301-1607231823'
 Radio_version_list = Radio_version.split('-')
 
 ELF_file_location = 0
@@ -189,11 +189,11 @@ else:
     os.chdir(Codebase_root_folder+cmm_path)
 
     print('>>> Loading Ramdump by T32......')
-    #os.system(T32_full_path + ' -s ' +write_loadsim_cmm_all)
+    os.system(T32_full_path + ' -s ' +write_loadsim_cmm_all)
 
-    case_number = input("Case#?, empty for skip the zip process: \r\n")
+    case_number = input(">>> Input Case number for zip file, empty for skip the zip process: \r\n")
     if case_number != '':
-        print('Zip everything for case#',case_number)
+        print('>>> Zip everything for case#',case_number)
       
         os.chdir(os.path.dirname(BIN_file_location))
         with open('coredump.txt', 'r') as input_file:
@@ -210,4 +210,5 @@ else:
         case_zip_file.write(BIN_file_location, os.path.basename(BIN_file_location))
         case_zip_file.write(ELF_file_location, os.path.basename(ELF_file_location))
         case_zip_file.close()
+        os.system('explorer '+os.path.dirname(BIN_file_location))
         

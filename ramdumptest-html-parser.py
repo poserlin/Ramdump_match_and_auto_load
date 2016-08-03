@@ -180,7 +180,7 @@ else:
     os.chdir(Codebase_root_folder+cmm_path)
 
     print('>>> Loading Ramdump by T32......')
-    #os.system(T32_full_path + ' -s ' +write_loadsim_cmm_all)
+    os.system(T32_full_path + ' -s ' +write_loadsim_cmm_all)
 
     case_number = input("Case#?, empty for skip the zip process: \r\n")
     if case_number != '':

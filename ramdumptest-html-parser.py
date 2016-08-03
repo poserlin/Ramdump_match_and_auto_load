@@ -61,7 +61,7 @@ def search_elf_remote(Radio_str, Radio_release_root):
         if not os.path.exists(os.path.dirname(Local_ELF_file_location)):
             os.mkdir(os.path.dirname(Local_ELF_file_location))
         
-        print('>>>>>>Found, Copy file from SSD server......')
+        print('>>> Found, Copy file from SSD server......')
         shutil.copy(ELF_file_remote_location, Local_ELF_file_location)
         shutil.copy(ELF_2_msghash(ELF_file_remote_location), ELF_2_msghash(Local_ELF_file_location))
         
@@ -70,9 +70,12 @@ def search_elf_remote(Radio_str, Radio_release_root):
             return 0
         else:
             print('>>>>>>Finish copying......')
-            os.replace(Local_ELF_file_location, os.path.splitext(Local_ELF_file_location)[0]+'_fin'+os.path.splitext(Local_ELF_file_location)[1])
-            print('Local_ELF_file_location', Local_ELF_file_location)
-            return Local_ELF_file_location
+            add_fin = lambda input_address: os.path.splitext(input_address)[0]+'_fin'+os.path.splitext(input_address)[1]
+            
+            Local_ELF_file_location_fin = add_fin(Local_ELF_file_location)
+            os.rename(Local_ELF_file_location, Local_ELF_file_location_fin)
+            print('Local_ELF_file_location', Local_ELF_file_location_fin)
+            return Local_ELF_file_location_fin
 
     
 #Define the local Search
@@ -201,4 +204,5 @@ else:
         case_zip_file.write(BIN_file_location, os.path.basename(BIN_file_location))
         case_zip_file.write(ELF_file_location, os.path.basename(ELF_file_location))
         case_zip_file.close()
+        os.system('explorer '+os.path.dirname(BIN_file_location))
         

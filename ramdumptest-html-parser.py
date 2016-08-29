@@ -1,5 +1,7 @@
 import os
+import shutil
 import zipfile
+import re
 import Search_module
 import Update_cmm
 
@@ -18,6 +20,8 @@ with open('config.txt', 'r') as config_file:
             T32_full_path = line.rstrip().split('= ')[1]
         elif 'local_temp_elf_folder' in line:
             local_temp_elf_folder = line.rstrip().split('= ')[1]
+        elif 'local_temp_dump_folder' in line:
+            local_temp_dump_folder = line.rstrip().split('= ')[1]
 
 # ==========================================================
 # Variable declaration
@@ -30,8 +34,24 @@ ELF_file_location = 0
 # ==========================================================
 
 BIN_file_location = input("Plz input DDRCS0.BIN: \r\n")
-Radio_version = input("Plz input Radio version: ")
 
+
+if os.path.basename(BIN_file_location) != 'DDRCS0.BIN' :
+    if os.path.splitext(BIN_file_location)[1] == '.zip':
+        # zip file found, try tp extract the DDRCSO.BIN from it
+        with zipfile.ZipFile(BIN_file_location, 'r') as zip_read:
+            for file in zip_read.namelist():
+                if 'DDRCS0.BIN' in file:
+                    temp_dump_folder = os.path.join(local_temp_dump_folder, os.path.splitext(os.path.basename(BIN_file_location))[0])
+                    print('BIN found @ {zip_location}, unzipping to {temp_dump_location} ....'.format(zip_location = file, temp_dump_location = temp_dump_folder))
+                    os.mkdir(os.path.splitext(temp_dump_folder)[0])
+                    source = zip_read.open(file)
+                    target = open(os.path.join(temp_dump_folder, 'DDRCS0.BIN'), 'wb')
+                    with source, target:
+                        shutil.copyfileobj(source, target)
+                        BIN_file_location = target
+
+Radio_version = input("Plz input Radio version: \r\n")
 # Search internal ELF first         
 ELF_file_location = Search_module.search_elf_local(Radio_version, local_temp_elf_folder)
 

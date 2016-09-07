@@ -69,7 +69,7 @@ def search_elf_remote(radio_version):
         if not os.path.exists(os.path.dirname(local_elf_file_location)):
             os.mkdir(os.path.dirname(local_elf_file_location))
 
-        print('>>> Found, Copy file from SSD server......')
+        print('>> Found, Copy file from SSD server......',)
         shutil.copy(elf_file_remote_location, local_elf_file_location)
         shutil.copy(ELF_2_msghash(elf_file_remote_location), ELF_2_msghash(local_elf_file_location))
 
@@ -77,13 +77,13 @@ def search_elf_remote(radio_version):
         if os.path.getsize(local_elf_file_location) != os.path.getsize(elf_file_remote_location):
             return 0
         else:
-            print('>>>>>>Finish copying......')
+            print('>>>> Finish copying......')
             add_fin = lambda input_address: os.path.splitext(input_address)[0] + '_fin' + \
                                             os.path.splitext(input_address)[1]
 
             local_elf_file_location_fin = add_fin(local_elf_file_location)
             os.rename(local_elf_file_location, local_elf_file_location_fin)
-            print('local_elf_file_location', local_elf_file_location_fin)
+            # print('local_elf_file_location', local_elf_file_location_fin)
             return local_elf_file_location_fin
 
 
@@ -101,7 +101,7 @@ def search_elf_local(radio_version):
         for x in fileNames:
             if fnmatch.fnmatch(x, '*' + radio_version_part + '_fin.elf'):
                 elf_file = os.path.join(dirPath, x)
-                print('Match ELF locally in  \r\n %s' % elf_file)
+                print('>>>> Match ELF locally in %s' % dirPath)
                 return elf_file
     print('Not found locally')
     return 0

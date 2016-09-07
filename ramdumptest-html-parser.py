@@ -1,7 +1,6 @@
 import os
 import shutil
 import zipfile
-import re
 import Search_module
 import Update_cmm
 
@@ -28,12 +27,12 @@ with open('config.txt', 'r') as config_file:
 # ==========================================================
 
 ELF_file_location = 0
-
+Radio_version = 0
 # ==========================================================
 # Main function
 # ==========================================================
 
-BIN_file_location = input("Plz input DDRCS0.BIN: \r\n")
+BIN_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
 
 
 if os.path.basename(BIN_file_location) != 'DDRCS0.BIN' :

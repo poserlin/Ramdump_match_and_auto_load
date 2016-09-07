@@ -30,11 +30,9 @@ ELF_2_msghash = lambda ELF_address: os.path.join(os.path.dirname(ELF_address), '
 # Define the Search elf based on provide radio version
 def search_elf(search_dir, radio_version):
     for dirPath, dirNames, fileNames in os.walk(search_dir):
-        for x in fileNames:
-            if fnmatch.fnmatch(x, '*' + radio_version + '*.img'):
+        for x in filter(lambda x: fnmatch.fnmatch(x, '*' + radio_version + '*.img'), fileNames):
                 full_radio_version = x.split('_')[1]
-                for elf in os.listdir(dirPath):
-                    if fnmatch.fnmatch(elf, 'M*.elf'):
+            for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'M*.elf'), os.listdir(dirPath)):
                         elf_file = os.path.join(dirPath, elf)
                         print('Match ELF is \r\n %s' % elf_file)
                         return elf_file, full_radio_version

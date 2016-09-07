@@ -40,7 +40,7 @@ def search_elf(search_dir, radio_version):
 
 # Define the Remote Search
 def search_elf_remote(radio_version, radio_release_root):
-    print('>> Searching Remotely......', end='')
+    print('>>> Searching Remotely......', end='')
     # Search remote dir by release ver
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
@@ -67,7 +67,7 @@ def search_elf_remote(radio_version, radio_release_root):
         if not os.path.exists(os.path.dirname(local_elf_file_location)):
             os.mkdir(os.path.dirname(local_elf_file_location))
 
-        print('>> Found, Copy file from SSD server......',)
+        print('>>> Found, Copy file from SSD server......')
         shutil.copy(elf_file_remote_location, local_elf_file_location)
         shutil.copy(ELF_2_msghash(elf_file_remote_location), ELF_2_msghash(local_elf_file_location))
 
@@ -75,19 +75,19 @@ def search_elf_remote(radio_version, radio_release_root):
         if os.path.getsize(local_elf_file_location) != os.path.getsize(elf_file_remote_location):
             return 0
         else:
-            print('>>>> Finish copying......')
+            print('>>>>>>Finish copying......')
             add_fin = lambda input_address: os.path.splitext(input_address)[0] + '_fin' + \
                                             os.path.splitext(input_address)[1]
 
             local_elf_file_location_fin = add_fin(local_elf_file_location)
             os.rename(local_elf_file_location, local_elf_file_location_fin)
-            # print('local_elf_file_location', local_elf_file_location_fin)
+            print('local_elf_file_location', local_elf_file_location_fin)
             return local_elf_file_location_fin
 
 
 # Define the local Search
 def search_elf_local(radio_version, search_dir):
-    print('>> Searching ELF Locally......',)
+    print('>>> Searching Locally......', end='')
     # Full radio version
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:
@@ -99,7 +99,7 @@ def search_elf_local(radio_version, search_dir):
         for x in fileNames:
             if fnmatch.fnmatch(x, '*' + radio_version_part + '_fin.elf'):
                 elf_file = os.path.join(dirPath, x)
-                print('>>>> Match ELF locally in %s' % dirPath)
+                print('Match ELF locally in  \r\n %s' % elf_file)
                 return elf_file
     print('Not found locally')
     return 0

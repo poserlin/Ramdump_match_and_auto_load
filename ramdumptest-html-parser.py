@@ -34,35 +34,29 @@ Radio_version = 0
 
 BIN_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
 
-# try to find the dump from zip file
-BIN_file_location = Search_module.search_bin(BIN_file_location)
 
-# try to read the Radio_version from DUMP
-print('>> Searching BIN file for Radio_version......\r')
-found = 0
-dump_file = open(BIN_file_location, 'rb')
+if os.path.basename(BIN_file_location) != 'DDRCS0.BIN' :
+    if os.path.splitext(BIN_file_location)[1] == '.zip':
+        # zip file found, try tp extract the DDRCSO.BIN from it
+        with zipfile.ZipFile(BIN_file_location, 'r') as zip_read:
+            for file in zip_read.namelist():
+                if 'DDRCS0.BIN' in file:
+                    temp_dump_folder = os.path.join(local_temp_dump_folder, os.path.splitext(os.path.basename(BIN_file_location))[0])
+                    print('BIN found @ {zip_location}, unzipping to {temp_dump_location} ....'.format(zip_location = file, temp_dump_location = temp_dump_folder))
+                    os.mkdir(os.path.splitext(temp_dump_folder)[0])
+                    source = zip_read.open(file)
+                    target = open(os.path.join(temp_dump_folder, 'DDRCS0.BIN'), 'wb')
+                    with source, target:
+                        shutil.copyfileobj(source, target)
+                        BIN_file_location = target
 
-while found < 2:
-    line = dump_file.readline()
-    if not line: break
-    try:
-        if 'baseband: version found:' in line.decode('ascii'):
-            Radio_version = line.decode('ascii').rstrip().split('version found: ')[1]
-            found += 1
-            if found == 2:
-                print('>>>> Radio_version found:', Radio_version)
-    except:
-        pass
-
-if Radio_version == 0:
-    Radio_version = input("Plz input Radio version: \r\n")
-
-# Search internal ELF first
-ELF_file_location = Search_module.search_elf_local(Radio_version)
+Radio_version = input("Plz input Radio version: \r\n")
+# Search internal ELF first         
+ELF_file_location = Search_module.search_elf_local(Radio_version, local_temp_elf_folder)
 
 # If local Search fail, Search remote dir by release ver
 if ELF_file_location == 0:
-    ELF_file_location = Search_module.search_elf_remote(Radio_version)
+    ELF_file_location = Search_module.search_elf_remote(Radio_version, remote_radio_release_root)
 
 if ELF_file_location == 0:
     print('Fail to find ELF')
@@ -72,12 +66,12 @@ else:
     # change to correct dir
     os.chdir(Codebase_root_folder + Update_cmm.cmm_path)
 
-    print('>> Loading Ramdump by T32......')
+    print('>>> Loading Ramdump by T32......')
     os.system(T32_full_path + ' -s ' + Update_cmm.write_loadsim_cmm_all)
 
-    case_number = input(">> Input Case number for zip file, empty for skip the zip process: \r\n")
+    case_number = input(">>> Input Case number for zip file, empty for skip the zip process: \r\n")
     if case_number != '':
-        print('>> Zip everything for case#', case_number)
+        print('>>> Zip everything for case#', case_number)
 
         os.chdir(os.path.dirname(BIN_file_location))
         with open('coredump.txt', 'r') as input_file:
@@ -95,4 +89,4 @@ else:
         case_zip_file.write(BIN_file_location, os.path.basename(BIN_file_location))
         case_zip_file.write(ELF_file_location, os.path.basename(ELF_file_location))
         case_zip_file.close()
-    os.system('explorer ' + os.path.dirname(BIN_file_location))
+        os.system('explorer ' + os.path.dirname(BIN_file_location))

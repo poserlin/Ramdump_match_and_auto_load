@@ -19,8 +19,7 @@ with open('config.txt', 'r') as config_file:
             T32_full_path = line.rstrip().split('= ')[1]
         elif 'local_temp_elf_folder' in line:
             local_temp_elf_folder = line.rstrip().split('= ')[1]
-        elif 'local_temp_dump_folder' in line:
-            local_temp_dump_folder = line.rstrip().split('= ')[1]
+
 
 # ==========================================================
 # Variable declaration
@@ -52,11 +51,11 @@ if os.path.basename(BIN_file_location) != 'DDRCS0.BIN' :
 
 Radio_version = input("Plz input Radio version: \r\n")
 # Search internal ELF first         
-ELF_file_location = Search_module.search_elf_local(Radio_version, local_temp_elf_folder)
+ELF_file_location = Search_module.search_elf_local(Radio_version)
 
 # If local Search fail, Search remote dir by release ver
 if ELF_file_location == 0:
-    ELF_file_location = Search_module.search_elf_remote(Radio_version, remote_radio_release_root)
+    ELF_file_location = Search_module.search_elf_remote(Radio_version)
 
 if ELF_file_location == 0:
     print('Fail to find ELF')

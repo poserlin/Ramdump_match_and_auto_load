@@ -18,6 +18,8 @@ with open('config.txt', 'r') as config_file:
             T32_full_path = line.rstrip().split('= ')[1]
         elif 'local_temp_elf_folder' in line:
             Temp_Elf_folder = line.rstrip().split('= ')[1]
+        elif 'local_temp_dump_folder' in line:
+            local_temp_dump_folder = line.rstrip().split('= ')[1]
 
 # ==========================================================
 # Function declaration
@@ -39,8 +41,8 @@ def search_elf(search_dir, radio_version):
 
 
 # Define the Remote Search
-def search_elf_remote(radio_version, radio_release_root):
-    print('>>> Searching Remotely......', end='')
+def search_elf_remote(radio_version):
+    print('>> Searching Remotely......', end='')
     # Search remote dir by release ver
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
@@ -86,8 +88,8 @@ def search_elf_remote(radio_version, radio_release_root):
 
 
 # Define the local Search
-def search_elf_local(radio_version, search_dir):
-    print('>>> Searching Locally......', end='')
+def search_elf_local(radio_version):
+    print('>> Searching ELF Locally......',)
     # Full radio version
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:
@@ -95,7 +97,7 @@ def search_elf_local(radio_version, search_dir):
     else:
         radio_version_part = radio_version_list[0]
 
-    for dirPath, dirNames, fileNames in os.walk(search_dir):
+    for dirPath, dirNames, fileNames in os.walk(Temp_Elf_folder):
         for x in fileNames:
             if fnmatch.fnmatch(x, '*' + radio_version_part + '_fin.elf'):
                 elf_file = os.path.join(dirPath, x)

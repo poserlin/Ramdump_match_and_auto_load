@@ -61,14 +61,15 @@ def search_elf_remote(radio_version):
     # if Found, copy ELF from remote server to local_temp_elf_folder
     if elf_file_remote_location != 0:
 
-        elf_file_rename = os.path.splitext(os.path.basename(elf_file_remote_location))[0] + '_' + radio_version_list[2] + \
+        elf_file_rename = os.path.splitext(os.path.basename(elf_file_remote_location))[0] + '_' + radio_version_list[
+            2] + \
                           os.path.splitext(os.path.basename(elf_file_remote_location))[1]
         local_elf_file_location = os.path.join(os.path.join(Temp_Elf_folder, full_radio_version), elf_file_rename)
 
         if not os.path.exists(os.path.dirname(local_elf_file_location)):
             os.mkdir(os.path.dirname(local_elf_file_location))
 
-        print('>> Found, Copy file from SSD server......',)
+        print('>> Found, Copy file from SSD server......', )
         shutil.copy(elf_file_remote_location, local_elf_file_location)
         shutil.copy(ELF_2_msghash(elf_file_remote_location), ELF_2_msghash(local_elf_file_location))
 
@@ -101,7 +102,7 @@ def search_elf_local(radio_version):
                 elf_file = os.path.join(dirPath, x)
                 print('>>>> Match ELF locally in %s' % dirPath)
                 return elf_file
-    print('Not found locally')
+    print('>>>> ELF Not found locally')
     return 0
 
 
@@ -111,11 +112,12 @@ def search_bin(bin_file_location):
         # zip file found, try tp extract the DDRCSO.BIN from it
         with zipfile.ZipFile(bin_file_location, 'r') as zip_read:
             for file in filter(lambda file: 'DDRCS0.BIN' in file, zip_read.namelist()):
-            # for file in zip_read.namelist():
+                # for file in zip_read.namelist():
                 if 'DDRCS0.BIN' in file:
                     temp_dump_folder = os.path.join(local_temp_dump_folder,
                                                     os.path.splitext(os.path.basename(bin_file_location))[0])
-                    print('>> BIN found !, unzipping to {temp_dump_location} ....'.format(temp_dump_location=temp_dump_folder))
+                    print('>>>> BIN found in ZIP, unzipping to {temp_dump_location} ....'.format(
+                        temp_dump_location=temp_dump_folder))
                     os.mkdir(os.path.splitext(temp_dump_folder)[0])
                     source = zip_read.open(file)
                     target = open(os.path.join(temp_dump_folder, 'DDRCS0.BIN'), 'wb')
@@ -124,4 +126,6 @@ def search_bin(bin_file_location):
                         return os.path.join(temp_dump_folder, 'DDRCS0.BIN')
                 else:
                     print('>>>> NO DDRCS0.BIN found in zip file')
-    return bin_file_location
+                    return 0
+    else:
+        return bin_file_location

@@ -26,10 +26,10 @@ Radio_version = 0
 # Main function
 # ==========================================================
 
-BIN_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
+input_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
 
 # Try to find the BIN from zip file
-BIN_file_location = Search_module.search_bin(BIN_file_location)
+BIN_file_location = Search_module.search_bin(input_file_location)
 
 # Try to read the Radio_version from DUMP
 found = 0
@@ -57,19 +57,19 @@ if ELF_file_location == 0:
     ELF_file_location = Search_module.search_elf_remote(Radio_version)
 
 if ELF_file_location == 0:
-    print('Fail to find ELF')
+    print('>>>> Fail to find ELF')
 else:
     Update_cmm.update_all_cmm(BIN_file_location, ELF_file_location)
 
     # change to correct dir
     os.chdir(Codebase_root_folder + Update_cmm.cmm_path)
 
-    print('>>> Loading Ramdump by T32......')
+    print('>> Loading Ramdump by T32......')
     os.system(T32_full_path + ' -s ' + Update_cmm.write_loadsim_cmm_all)
 
-    case_number = input(">>> Input Case number for zip file, empty for skip the zip process: \r\n")
+    case_number = input(">> Input Case number for zip file, empty for skip the zip process: \r\n")
     if case_number != '':
-        print('>>> Zip everything for case#', case_number)
+        print('>>>> Zip everything for case#', case_number)
 
         os.chdir(os.path.dirname(BIN_file_location))
         with open('coredump.txt', 'r') as input_file:

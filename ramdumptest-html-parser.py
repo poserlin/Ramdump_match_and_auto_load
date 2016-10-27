@@ -32,20 +32,8 @@ input_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
 BIN_file_location = Search_module.search_bin(input_file_location)
 
 # Try to read the Radio_version from DUMP
-found = 0
-dump_file = open(BIN_file_location, 'rb')
-while found < 2:
-    line=dump_file.readline()
-    if not line: break
-    try:
-        if 'baseband: version found:' in line.decode('ascii'):
-            Radio_version = line.decode('ascii').rstrip().split('version found: ')[1]
-            found = found + 1
-            if found == 2:
-                print(Radio_version)
-    except:
-        pass
-        
+Radio_version = Search_module.search_radio_version(BIN_file_location)
+
 if Radio_version == 0:
     Radio_version = input("Plz input Radio version: \r\n")
 

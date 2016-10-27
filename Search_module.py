@@ -129,3 +129,25 @@ def search_bin(bin_file_location):
                     return 0
     else:
         return bin_file_location
+
+
+def search_radio_version(BIN_file_location):
+    found = 0
+    # input Bin file are not valid
+    if BIN_file_location == 0:
+        return 0
+    with open(BIN_file_location, 'rb') as dump_file:
+        while found < 2:
+            line = dump_file.readline()
+            if not line:
+                break
+            try:
+                if 'baseband: version found:' in line.decode('ascii'):
+                    Radio_version = line.decode('ascii').rstrip().split('version found: ')[1]
+                    found += 1
+                    if found == 2:
+                        print('>>>> Radio found within Bin:', Radio_version)
+                        return Radio_version
+            except:
+                pass
+        return 0

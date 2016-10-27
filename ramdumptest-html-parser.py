@@ -1,5 +1,4 @@
 import os
-import shutil
 import zipfile
 import Search_module
 import Update_cmm
@@ -13,12 +12,8 @@ with open('config.txt', 'r') as config_file:
     for line in config_file:
         if 'Codebase_root_folder' in line:
             Codebase_root_folder = line.rstrip().split('= ')[1]
-        elif 'radio_release_root' in line:
-            remote_radio_release_root = line.rstrip().split('= ')[1]
         elif 'T32_full_path' in line:
             T32_full_path = line.rstrip().split('= ')[1]
-        elif 'local_temp_elf_folder' in line:
-            local_temp_elf_folder = line.rstrip().split('= ')[1]
 
 
 # ==========================================================

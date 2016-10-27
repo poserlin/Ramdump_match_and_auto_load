@@ -17,8 +17,6 @@ with open('config.txt', 'r') as config_file:
             radio_release_root = line.rstrip().split('= ')[1]
         elif 'T32_full_path' in line:
             T32_full_path = line.rstrip().split('= ')[1]
-        elif 'local_temp_elf_folder' in line:
-            Temp_Elf_folder = line.rstrip().split('= ')[1]
         elif 'local_temp_dump_folder' in line:
             local_temp_dump_folder = line.rstrip().split('= ')[1]
 
@@ -90,7 +88,6 @@ def search_elf_remote(radio_version):
 
 # Define the local Search
 def search_elf_local(radio_version):
-    print('>> Searching ELF Locally......',)
     # Full radio version
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:

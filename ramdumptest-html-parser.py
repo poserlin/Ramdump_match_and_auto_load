@@ -37,12 +37,13 @@ Radio_version = Search_module.search_radio_version(BIN_file_location)
 if Radio_version == 0:
     Radio_version = input("Plz input Radio version: \r\n")
 
-# Search internal ELF first         
-ELF_file_location = Search_module.search_elf_local(Radio_version)
-
-# If local Search fail, Search remote dir by release ver
-if ELF_file_location == 0:
-    ELF_file_location = Search_module.search_elf_remote(Radio_version)
+# create a search instance
+elf = Search_module.Elf_search(Radio_version)
+# Search internal ELF first, If local Search fail, Search remote dir by release ver
+if elf.locally() == 0:
+    ELF_file_location = elf.remotely()
+else:
+    ELF_file_location = elf.elf_loc
 
 if ELF_file_location == 0:
     print('>>>> Fail to find ELF')
@@ -75,4 +76,4 @@ else:
         case_zip_file.write(BIN_file_location, os.path.basename(BIN_file_location))
         case_zip_file.write(ELF_file_location, os.path.basename(ELF_file_location))
         case_zip_file.close()
-        os.system('explorer ' + os.path.dirname(BIN_file_location))
+    os.system('explorer ' + os.path.dirname(BIN_file_location))

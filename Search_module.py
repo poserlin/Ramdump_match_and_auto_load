@@ -19,6 +19,25 @@ with open('config.txt', 'r') as config_file:
             T32_full_path = line.rstrip().split('= ')[1]
         elif 'local_temp_dump_folder' in line:
             local_temp_dump_folder = line.rstrip().split('= ')[1]
+            Temp_Elf_folder = os.path.join(local_temp_dump_folder, 'ELF_temp')
+
+
+# ==========================================================
+# Class declaration
+# =========================================================
+class Elf_search:
+    def __init__(self, radio_version):
+        self.radio_version = radio_version
+        self.elf_loc = 0
+
+    def locally(self):
+        self.elf_loc = search_elf_local(self.radio_version)
+        return self.elf_loc
+
+    def remotely(self):
+        self.elf_loc = search_elf_remote(self.radio_version)
+        return self.elf_loc
+
 
 # ==========================================================
 # Function declaration

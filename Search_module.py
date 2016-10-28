@@ -127,7 +127,7 @@ def search_elf_local(radio_version):
 
 # Define the Zip BIN file search
 def search_bin(bin_file_location):
-    if os.path.basename(bin_file_location) != 'DDRCS0.BIN' and os.path.splitext(bin_file_location)[1] == '.zip':
+    if os.path.basename(bin_file_location) != 'DDRCS0.BIN' and zipfile.is_zipfile(bin_file_location):
         # zip file found, try tp extract the DDRCSO.BIN from it
         with zipfile.ZipFile(bin_file_location, 'r') as zip_read:
             for file in filter(lambda file: 'DDRCS0.BIN' in file, zip_read.namelist()):

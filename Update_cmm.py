@@ -13,34 +13,16 @@ with open('config.txt', 'r') as config_file:
 # Variable declaration
 # ==========================================================
 cmm_path = r'\common\Core\tools\cmm\common\msm8996'
-
 read_loadsim_cmm = r'\std_loadsim_mpss_htc_8996.cmm'
-# write_loadsim_cmm = r'\std_loadsim_mpss_htc_8996_poser_out.cmm'
-
 read_loadsyms_cmm = r'\std_loadsyms_mpss.cmm'
-# write_loadsyms_cmm = r'\std_loadsyms_mpss_poser_out.cmm'
-
 read_recover_f3_cmm = r'\recovery_f3_htc.cmm'
-# write_recover_f3_cmm = r'\recovery_f3_htc_out.cmm'
-
-# read_loadsim_cmm_all = Codebase_root_folder + cmm_path + read_loadsim_cmm
-# write_loadsim_cmm_all = Codebase_root_folder + cmm_path + write_loadsim_cmm
-#
-# read_loadsyms_cmm_all = Codebase_root_folder + cmm_path + read_loadsyms_cmm
-# write_loadsyms_cmm_all = Codebase_root_folder + cmm_path + write_loadsyms_cmm
-#
-# read_recover_f3_cmm_all = Codebase_root_folder + cmm_path + read_recover_f3_cmm
-# write_recover_f3_cmm_all = Codebase_root_folder + cmm_path + write_recover_f3_cmm
-
-
-
-
-
 
 # ==========================================================
 # Function declaration
 # ==========================================================
 # Define the update_cmm function for update correct cmm script
+
+
 def update_cmm(read_cmm, write_cmm, replace_target, replace_object):
     with open(write_cmm, 'w') as output_file, open(read_cmm, 'r') as input_file:
         for line in input_file:
@@ -67,8 +49,9 @@ def update_cmm_dict(read_cmm, replace_word_dict):
 # ==========================================================
 # update_cmm module
 # ==========================================================
-def update_all_cmm(BIN_file_location, ELF_file_location):
 
+
+def update_all_cmm(BIN_file_location, ELF_file_location):
     # Replace string
     replace_in_loadsim = ['DIALOG.FILE *.bin', 'ENTRY &DDRCS0_FILENAME', 'do std_loadsyms_mpss &logpath',
                           'v.write #1 "RCMS_Name = " %STanDard %string htc_smem_ram.RCMS_Name']
@@ -84,11 +67,6 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
     replace_out_recover_f3 = [
         'cd.do ../../../../../../modem_proc/core/services/diag/f3_trace/cmm/recover_f3.cmm  ' + os.path.dirname(
             BIN_file_location) + ' ' + ELF_2_msghash(ELF_file_location)]
-
-    # Update cmm files
-    # update_cmm(read_loadsim_cmm_all, write_loadsim_cmm_all, replace_in_loadsim, replace_out_loadsim)
-    # update_cmm(read_loadsyms_cmm_all, write_loadsyms_cmm_all, replace_in_loadsyms, replace_out_loadsyms)
-    # update_cmm(read_recover_f3_cmm_all, write_recover_f3_cmm_all, replace_in_recover_f3, replace_out_recover_f3)
 
     process_loadsim_dict = dict(zip(replace_in_loadsim, replace_out_loadsim))
     process_loadsyms_dict = dict(zip(replace_in_loadsyms, replace_out_loadsyms))

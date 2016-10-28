@@ -15,29 +15,32 @@ with open('config.txt', 'r') as config_file:
 cmm_path = r'\common\Core\tools\cmm\common\msm8996'
 
 read_loadsim_cmm = r'\std_loadsim_mpss_htc_8996.cmm'
-write_loadsim_cmm = r'\std_loadsim_mpss_htc_8996_poser_out.cmm'
+# write_loadsim_cmm = r'\std_loadsim_mpss_htc_8996_poser_out.cmm'
 
 read_loadsyms_cmm = r'\std_loadsyms_mpss.cmm'
-write_loadsyms_cmm = r'\std_loadsyms_mpss_poser_out.cmm'
+# write_loadsyms_cmm = r'\std_loadsyms_mpss_poser_out.cmm'
 
 read_recover_f3_cmm = r'\recovery_f3_htc.cmm'
-write_recover_f3_cmm = r'\recovery_f3_htc_out.cmm'
+# write_recover_f3_cmm = r'\recovery_f3_htc_out.cmm'
 
-read_loadsim_cmm_all = Codebase_root_folder + cmm_path + read_loadsim_cmm
-write_loadsim_cmm_all = Codebase_root_folder + cmm_path + write_loadsim_cmm
+# read_loadsim_cmm_all = Codebase_root_folder + cmm_path + read_loadsim_cmm
+# write_loadsim_cmm_all = Codebase_root_folder + cmm_path + write_loadsim_cmm
+#
+# read_loadsyms_cmm_all = Codebase_root_folder + cmm_path + read_loadsyms_cmm
+# write_loadsyms_cmm_all = Codebase_root_folder + cmm_path + write_loadsyms_cmm
+#
+# read_recover_f3_cmm_all = Codebase_root_folder + cmm_path + read_recover_f3_cmm
+# write_recover_f3_cmm_all = Codebase_root_folder + cmm_path + write_recover_f3_cmm
 
-read_loadsyms_cmm_all = Codebase_root_folder + cmm_path + read_loadsyms_cmm
-write_loadsyms_cmm_all = Codebase_root_folder + cmm_path + write_loadsyms_cmm
 
-read_recover_f3_cmm_all = Codebase_root_folder + cmm_path + read_recover_f3_cmm
-write_recover_f3_cmm_all = Codebase_root_folder + cmm_path + write_recover_f3_cmm
+
+
 
 
 # ==========================================================
 # Function declaration
 # ==========================================================
 # Define the update_cmm function for update correct cmm script
-
 def update_cmm(read_cmm, write_cmm, replace_target, replace_object):
     with open(write_cmm, 'w') as output_file, open(read_cmm, 'r') as input_file:
         for line in input_file:
@@ -49,6 +52,17 @@ def update_cmm(read_cmm, write_cmm, replace_target, replace_object):
                     output_file.write(line)
                     break
 
+
+def update_cmm_dict(read_cmm, replace_word_dict):
+    write_cmm = read_cmm.replace('.cmm', '_poser_out.cmm')
+    with open(write_cmm, 'w') as output_file, open(read_cmm, 'r') as input_file:
+        for line in input_file:
+            for key in replace_word_dict:
+                if key in line:
+                    output_file.write(line.replace(key, replace_word_dict[key]))
+                else:
+                    output_file.write(line)
+                break
 
 # ==========================================================
 # update_cmm module
@@ -72,7 +86,18 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
             BIN_file_location) + ' ' + ELF_2_msghash(ELF_file_location)]
 
     # Update cmm files
-    update_cmm(read_loadsim_cmm_all, write_loadsim_cmm_all, replace_in_loadsim, replace_out_loadsim)
-    update_cmm(read_loadsyms_cmm_all, write_loadsyms_cmm_all, replace_in_loadsyms, replace_out_loadsyms)
-    update_cmm(read_recover_f3_cmm_all, write_recover_f3_cmm_all, replace_in_recover_f3, replace_out_recover_f3)
+    # update_cmm(read_loadsim_cmm_all, write_loadsim_cmm_all, replace_in_loadsim, replace_out_loadsim)
+    # update_cmm(read_loadsyms_cmm_all, write_loadsyms_cmm_all, replace_in_loadsyms, replace_out_loadsyms)
+    # update_cmm(read_recover_f3_cmm_all, write_recover_f3_cmm_all, replace_in_recover_f3, replace_out_recover_f3)
 
+    process_loadsim_dict = dict(zip(replace_in_loadsim, replace_out_loadsim))
+    process_loadsyms_dict = dict(zip(replace_in_loadsyms, replace_out_loadsyms))
+    process_recover_f3_dict = dict(zip(replace_in_recover_f3, replace_out_recover_f3))
+
+    input_files = [read_loadsim_cmm, read_loadsyms_cmm, read_recover_f3_cmm]
+    input_cmm = [Codebase_root_folder + cmm_path + i for i in input_files]
+    input_cmm_dict = dict(zip(['loadsim', 'loadsyms', 'recover_f3'], input_cmm))
+
+    update_cmm_dict(input_cmm_dict['loadsim'], process_loadsim_dict)
+    update_cmm_dict(input_cmm_dict['loadsyms'], process_loadsyms_dict)
+    update_cmm_dict(input_cmm_dict['recover_f3'], process_recover_f3_dict)

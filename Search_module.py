@@ -3,6 +3,7 @@ import fnmatch
 import os
 import re
 import shutil
+import zipfile
 
 # ==========================================================
 # User Variable
@@ -16,8 +17,27 @@ with open('config.txt', 'r') as config_file:
             radio_release_root = line.rstrip().split('= ')[1]
         elif 'T32_full_path' in line:
             T32_full_path = line.rstrip().split('= ')[1]
-        elif 'local_temp_elf_folder' in line:
-            Temp_Elf_folder = line.rstrip().split('= ')[1]
+        elif 'local_temp_dump_folder' in line:
+            local_temp_dump_folder = line.rstrip().split('= ')[1]
+            Temp_Elf_folder = os.path.join(local_temp_dump_folder, 'ELF_temp')
+
+
+# ==========================================================
+# Class declaration
+# =========================================================
+class Elf_search:
+    def __init__(self, radio_version):
+        self.radio_version = radio_version
+        self.elf_loc = 0
+
+    def locally(self):
+        self.elf_loc = search_elf_local(self.radio_version)
+        return self.elf_loc
+
+    def remotely(self):
+        self.elf_loc = search_elf_remote(self.radio_version)
+        return self.elf_loc
+
 
 # ==========================================================
 # Function declaration
@@ -30,19 +50,17 @@ ELF_2_msghash = lambda ELF_address: os.path.join(os.path.dirname(ELF_address), '
 # Define the Search elf based on provide radio version
 def search_elf(search_dir, radio_version):
     for dirPath, dirNames, fileNames in os.walk(search_dir):
-        for x in fileNames:
-            if fnmatch.fnmatch(x, '*' + radio_version + '*.img'):
-                full_radio_version = x.split('_')[1]
-                for elf in os.listdir(dirPath):
-                    if fnmatch.fnmatch(elf, 'M*.elf'):
-                        elf_file = os.path.join(dirPath, elf)
-                        print('Match ELF is \r\n %s' % elf_file)
-                        return elf_file, full_radio_version
+        for x in filter(lambda x: fnmatch.fnmatch(x, '*' + radio_version + '*.img'), fileNames):
+            full_radio_version = x.split('_')[1]
+            for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'M*.elf'), os.listdir(dirPath)):
+                elf_file = os.path.join(dirPath, elf)
+                print('Match ELF is \r\n %s' % elf_file)
+                return elf_file, full_radio_version
 
 
 # Define the Remote Search
-def search_elf_remote(radio_version, radio_release_root):
-    print('>>> Searching Remotely......', end='')
+def search_elf_remote(radio_version):
+    print('>> Searching Remotely......', end='')
     # Search remote dir by release ver
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
@@ -62,14 +80,15 @@ def search_elf_remote(radio_version, radio_release_root):
     # if Found, copy ELF from remote server to local_temp_elf_folder
     if elf_file_remote_location != 0:
 
-        elf_file_rename = os.path.splitext(os.path.basename(elf_file_remote_location))[0] + '_' + radio_version_list[2] + \
+        elf_file_rename = os.path.splitext(os.path.basename(elf_file_remote_location))[0] + '_' + radio_version_list[
+            2] + \
                           os.path.splitext(os.path.basename(elf_file_remote_location))[1]
         local_elf_file_location = os.path.join(os.path.join(Temp_Elf_folder, full_radio_version), elf_file_rename)
 
         if not os.path.exists(os.path.dirname(local_elf_file_location)):
             os.mkdir(os.path.dirname(local_elf_file_location))
 
-        print('>>> Found, Copy file from SSD server......')
+        print('>> Found, Copy file from SSD server......', )
         shutil.copy(elf_file_remote_location, local_elf_file_location)
         shutil.copy(ELF_2_msghash(elf_file_remote_location), ELF_2_msghash(local_elf_file_location))
 
@@ -77,19 +96,18 @@ def search_elf_remote(radio_version, radio_release_root):
         if os.path.getsize(local_elf_file_location) != os.path.getsize(elf_file_remote_location):
             return 0
         else:
-            print('>>>>>>Finish copying......')
+            print('>>>> Finish copying......')
             add_fin = lambda input_address: os.path.splitext(input_address)[0] + '_fin' + \
                                             os.path.splitext(input_address)[1]
 
             local_elf_file_location_fin = add_fin(local_elf_file_location)
             os.rename(local_elf_file_location, local_elf_file_location_fin)
-            print('local_elf_file_location', local_elf_file_location_fin)
+            # print('local_elf_file_location', local_elf_file_location_fin)
             return local_elf_file_location_fin
 
 
 # Define the local Search
-def search_elf_local(radio_version, search_dir):
-    print('>>> Searching Locally......', end='')
+def search_elf_local(radio_version):
     # Full radio version
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:
@@ -97,11 +115,58 @@ def search_elf_local(radio_version, search_dir):
     else:
         radio_version_part = radio_version_list[0]
 
-    for dirPath, dirNames, fileNames in os.walk(search_dir):
+    for dirPath, dirNames, fileNames in os.walk(Temp_Elf_folder):
         for x in fileNames:
             if fnmatch.fnmatch(x, '*' + radio_version_part + '_fin.elf'):
                 elf_file = os.path.join(dirPath, x)
-                print('Match ELF locally in  \r\n %s' % elf_file)
+                print('>>>> Match ELF locally in %s' % dirPath)
                 return elf_file
-    print('Not found locally')
+    print('>>>> ELF Not found locally')
     return 0
+
+
+# Define the Zip BIN file search
+def search_bin(bin_file_location):
+    if os.path.basename(bin_file_location) != 'DDRCS0.BIN' and zipfile.is_zipfile(bin_file_location):
+        # zip file found, try tp extract the DDRCSO.BIN from it
+        with zipfile.ZipFile(bin_file_location, 'r') as zip_read:
+            for file in filter(lambda file: 'DDRCS0.BIN' in file, zip_read.namelist()):
+                # for file in zip_read.namelist():
+                if 'DDRCS0.BIN' in file:
+                    temp_dump_folder = os.path.join(local_temp_dump_folder,
+                                                    os.path.splitext(os.path.basename(bin_file_location))[0])
+                    print('>>>> BIN found in ZIP, unzipping to {temp_dump_location} ....'.format(
+                        temp_dump_location=temp_dump_folder))
+                    os.mkdir(os.path.splitext(temp_dump_folder)[0])
+                    source = zip_read.open(file)
+                    target = open(os.path.join(temp_dump_folder, 'DDRCS0.BIN'), 'wb')
+                    with source, target:
+                        shutil.copyfileobj(source, target)
+                        return os.path.join(temp_dump_folder, 'DDRCS0.BIN')
+                else:
+                    print('>>>> NO DDRCS0.BIN found in zip file')
+                    return 0
+    else:
+        return bin_file_location
+
+
+def search_radio_version(BIN_file_location):
+    found = 0
+    # input Bin file are not valid
+    if BIN_file_location == 0:
+        return 0
+    with open(BIN_file_location, 'rb') as dump_file:
+        while found < 2:
+            line = dump_file.readline()
+            if not line:
+                break
+            try:
+                if 'baseband: version found:' in line.decode('ascii'):
+                    Radio_version = line.decode('ascii').rstrip().split('version found: ')[1]
+                    found += 1
+                    if found == 2:
+                        print('>>>> Radio found within Bin:', Radio_version)
+                        return Radio_version
+            except:
+                pass
+        return 0

@@ -48,11 +48,13 @@ else:
 if ELF_file_location == 0:
     print('>>>> Fail to find ELF')
 else:
+    Update_cmm.update_all_cmm(BIN_file_location, ELF_file_location)
+
     # change to correct dir
     os.chdir(Codebase_root_folder + Update_cmm.cmm_path)
 
     print('>> Loading Ramdump by T32......')
-    os.system(T32_full_path + ' -s ' + Update_cmm.update_all_cmm(BIN_file_location, ELF_file_location))
+    os.system(T32_full_path + ' -s ' + Update_cmm.write_loadsim_cmm_all)
 
     case_number = input(">> Input Case number for zip file, empty for skip the zip process: \r\n")
     if case_number != '':

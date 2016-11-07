@@ -47,6 +47,14 @@ class Elf_search:
 ELF_2_msghash = lambda ELF_address: os.path.join(os.path.dirname(ELF_address), 'msg_hash.txt')
 
 
+# Define the Search smem for SSR Ramdump based on provide bin
+def BIN_2_smem(BIN_file_location):
+    for file in filter(lambda file: fnmatch.fnmatch(file, 'ramdump_smem_*'), os.listdir(os.path.dirname(BIN_file_location))):
+        return os.path.join(os.path.dirname(BIN_file_location), file)
+    return ''
+
+
+
 # Define the Search elf based on provide radio version
 def search_elf(search_dir, radio_version):
     for dirPath, dirNames, fileNames in os.walk(search_dir):

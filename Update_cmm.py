@@ -1,5 +1,6 @@
 import os
-from Search_module import ELF_2_msghash
+import fnmatch
+from Search_module import ELF_2_msghash,BIN_2_smem
 
 # ==========================================================
 # User Variable
@@ -17,6 +18,9 @@ cmm_path = r'\common\Core\tools\cmm\common\msm8996'
 read_loadsim_cmm = r'\std_loadsim_mpss_htc_8996.cmm'
 write_loadsim_cmm = r'\std_loadsim_mpss_htc_8996_poser_out.cmm'
 
+read_loadsim_SSR_cmm = r'\std_loadsim_mpss_htc_8996_SSR.cmm'
+write_loadsim_SSR_cmm = r'\std_loadsim_mpss_htc_8996_SSR_poser_out.cmm'
+
 read_loadsyms_cmm = r'\std_loadsyms_mpss.cmm'
 write_loadsyms_cmm = r'\std_loadsyms_mpss_poser_out.cmm'
 
@@ -25,6 +29,9 @@ write_recover_f3_cmm = r'\recovery_f3_htc_out.cmm'
 
 read_loadsim_cmm_all = Codebase_root_folder + cmm_path + read_loadsim_cmm
 write_loadsim_cmm_all = Codebase_root_folder + cmm_path + write_loadsim_cmm
+
+read_loadsim_SSR_cmm_all = Codebase_root_folder + cmm_path + read_loadsim_SSR_cmm
+write_loadsim_SSR_cmm_all = Codebase_root_folder + cmm_path + write_loadsim_SSR_cmm
 
 read_loadsyms_cmm_all = Codebase_root_folder + cmm_path + read_loadsyms_cmm
 write_loadsyms_cmm_all = Codebase_root_folder + cmm_path + write_loadsyms_cmm
@@ -61,6 +68,18 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
     replace_out_loadsim = ['', '&DDRCS0_FILENAME="' + BIN_file_location + '"',
                            'do std_loadsyms_mpss_poser_out &logpath',
                            'v.write #1 "qc_image_version_string = " %STanDard %string coredump.image.qc_image_version_string']
+    replace_in_loadsim_SSR = ['DIALOG.FILE *.bin', 'ENTRY &DDRCS0_FILENAME',
+                              'dialog.file ramdump_smem_*.bin', 'entry &SMEM_log',
+                              'do std_loadsyms_mpss &logpath',
+                              'v.write #1 "RCMS_Name = " %STanDard %string htc_smem_ram.RCMS_Name',
+                              'v.write #1 "qxdm_dbg_msg = " %STanDard %string qxdm_dbg_msg',
+                              'GOSUB POSTMORTEM_ANALYSIS']
+    replace_out_loadsim_SSR = ['', '&DDRCS0_FILENAME="' + BIN_file_location + '"',
+                               '', '&SMEM_log="'+BIN_2_smem(BIN_file_location)+'"',
+                               'do std_loadsyms_mpss_poser_out &logpath',
+                               'v.write #1 "qc_image_version_string = " %STanDard %string coredump.image.qc_image_version_string',
+                               'v.write #1 "aux_msg = " %STanDard %string coredump.err.aux_msg',
+                               'do recovery_f3_htc_out']
 
     replace_in_loadsyms = ['DIALOG.FILE "&filepath/*&RootElfSuffix"', 'ENTRY &rvalue_elffile',
                            'DIALOG.FILE "*&RootElfSuffix"']
@@ -72,7 +91,14 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
             BIN_file_location) + ' ' + ELF_2_msghash(ELF_file_location)]
 
     # Update cmm files
-    update_cmm(read_loadsim_cmm_all, write_loadsim_cmm_all, replace_in_loadsim, replace_out_loadsim)
     update_cmm(read_loadsyms_cmm_all, write_loadsyms_cmm_all, replace_in_loadsyms, replace_out_loadsyms)
     update_cmm(read_recover_f3_cmm_all, write_recover_f3_cmm_all, replace_in_recover_f3, replace_out_recover_f3)
 
+    if fnmatch.fnmatch(os.path.basename(BIN_file_location), 'ramdump_modem_' + '*'):
+        print('SSR dump')
+        update_cmm(read_loadsim_SSR_cmm_all, write_loadsim_SSR_cmm_all, replace_in_loadsim_SSR, replace_out_loadsim_SSR)
+        return write_loadsim_SSR_cmm_all
+    elif fnmatch.fnmatch(os.path.basename(BIN_file_location), 'DDRCS0' + '*'):
+        print('Fulldump')
+        update_cmm(read_loadsim_cmm_all, write_loadsim_cmm_all, replace_in_loadsim, replace_out_loadsim)
+        return write_loadsim_cmm_all

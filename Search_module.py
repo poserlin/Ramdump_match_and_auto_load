@@ -172,17 +172,26 @@ def search_radio_version(BIN_file_location):
     if BIN_file_location == 0:
         return 0
     with open(BIN_file_location, 'rb') as dump_file:
-        while found < 2:
-            line = dump_file.readline()
-            if not line:
-                break
-            try:
-                if 'baseband: version found:' in line.decode('ascii'):
-                    Radio_version = line.decode('ascii').rstrip().split('version found: ')[1]
-                    found += 1
-                    if found == 2:
-                        print('>>>> Radio found within Bin:', Radio_version)
-                        return Radio_version
-            except:
-                pass
+        # Search SSR dump radio version for special mem address
+        if fnmatch.fnmatch(os.path.basename(BIN_file_location), 'ramdump_modem_*'):
+            # for SSR dump, move index to (0x0247395c) to get the radio version
+            dump_file.seek(0x0247395c)
+            Radio_version = dump_file.read(22).decode('ascii')
+            if isinstance(Radio_version, str):
+                print('>>>> Radio found within Bin:', Radio_version)
+                return Radio_version
+        else:
+            while found < 2:
+                line = dump_file.readline()
+                if not line:
+                    break
+                try:
+                    if 'baseband: version found:' in line.decode('ascii'):
+                        Radio_version = line.decode('ascii').rstrip().split('version found: ')[1]
+                        found += 1
+                        if found == 2:
+                            print('>>>> Radio found within Bin:', Radio_version)
+                            return Radio_version
+                except:
+                    pass
         return 0

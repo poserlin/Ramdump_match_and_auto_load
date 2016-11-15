@@ -64,10 +64,15 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
 
     # Replace string
     replace_in_loadsim = ['DIALOG.FILE *.bin', 'ENTRY &DDRCS0_FILENAME', 'do std_loadsyms_mpss &logpath',
-                          'v.write #1 "RCMS_Name = " %STanDard %string htc_smem_ram.RCMS_Name']
+                          'v.write #1 "RCMS_Name = " %STanDard %string htc_smem_ram.RCMS_Name',
+                          'v.write #1 "qxdm_dbg_msg = " %STanDard %string qxdm_dbg_msg',
+                          'GOSUB POSTMORTEM_ANALYSIS']
     replace_out_loadsim = ['', '&DDRCS0_FILENAME="' + BIN_file_location + '"',
                            'do std_loadsyms_mpss_poser_out &logpath',
-                           'v.write #1 "qc_image_version_string = " %STanDard %string coredump.image.qc_image_version_string']
+                           'v.write #1 "qc_image_version_string = " %STanDard %string coredump.image.qc_image_version_string',
+                           'v.write #1 "aux_msg = " %STanDard %string coredump.err.aux_msg',
+                           'do recovery_f3_htc_out']
+
     replace_in_loadsim_SSR = ['DIALOG.FILE *.bin', 'ENTRY &DDRCS0_FILENAME',
                               'dialog.file ramdump_smem_*.bin', 'entry &SMEM_log',
                               'do std_loadsyms_mpss &logpath',

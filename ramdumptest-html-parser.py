@@ -31,22 +31,28 @@ input_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
 # Try to find the BIN from zip file
 BIN_file_location = Search_module.search_bin(input_file_location)
 
+print(BIN_file_location)
 # Try to read the Radio_version from DUMP
 Radio_version = Search_module.search_radio_version(BIN_file_location)
 
 if Radio_version == 0:
-    Radio_version = input("Plz input Radio version: \r\n")
-
-# create a search instance
-elf = Search_module.Elf_search(Radio_version)
-# Search internal ELF first, If local Search fail, Search remote dir by release ver
-if elf.locally() == 0:
-    ELF_file_location = elf.remotely()
-else:
-    ELF_file_location = elf.elf_loc
+    # Radio version not found in BIN file
+    Radio_version = input("Plz input Radio version or ELF file: \r\n")
+    # Input is elf file location
+    if os.path.splitext(Radio_version)[1] == '.elf':
+        ELF_file_location = Radio_version
+    # Input is numbical radio version
+    else:
+        # create a search instance
+        elf = Search_module.Elf_search(Radio_version)
+        # Search internal ELF first, If local Search fail, Search remote dir by release ver
+        if elf.locally() == 0:
+            ELF_file_location = elf.remotely()
+        else:
+            ELF_file_location = elf.elf_loc
 
 if ELF_file_location == 0:
-    print('>>>> Fail to find ELF')
+    print('>> Fail to find the ELF')
 else:
 
 

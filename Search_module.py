@@ -135,27 +135,35 @@ def search_elf_local(radio_version):
 
 # Define the Zip BIN file search
 def search_bin(bin_file_location):
-    if os.path.basename(bin_file_location) != 'DDRCS0.BIN' and zipfile.is_zipfile(bin_file_location):
+    match_list = ['*ramdump_smem_*',  '*ramdump_modem_*', '*DDRCS0.BIN']
+
+    for match_file in match_list:
+        if fnmatch.fnmatch(os.path.basename(bin_file_location), match_file):
+            return bin_file_location
+
+
+    if zipfile.is_zipfile(bin_file_location):
         # zip file found, try tp extract the DDRCSO.BIN from it
         with zipfile.ZipFile(bin_file_location, 'r') as zip_read:
-            for file in filter(lambda file: 'DDRCS0.BIN' in file, zip_read.namelist()):
-                # for file in zip_read.namelist():
-                if 'DDRCS0.BIN' in file:
+            # for Matching file in zip_read.namelist():
+            for match_file in match_list:
+                for file in filter(lambda file: fnmatch.fnmatch(file, match_file), zip_read.namelist()):
                     temp_dump_folder = os.path.join(local_temp_dump_folder,
                                                     os.path.splitext(os.path.basename(bin_file_location))[0])
                     print('>>>> BIN found in ZIP, unzipping to {temp_dump_location} ....'.format(
                         temp_dump_location=temp_dump_folder))
-                    os.mkdir(os.path.splitext(temp_dump_folder)[0])
+                    if os.path.isdir(os.path.splitext(temp_dump_folder)[0]) == 0:
+                        os.mkdir(os.path.splitext(temp_dump_folder)[0])
                     source = zip_read.open(file)
-                    target = open(os.path.join(temp_dump_folder, 'DDRCS0.BIN'), 'wb')
+                    target = open(os.path.join(temp_dump_folder, os.path.basename(file)), 'wb')
                     with source, target:
                         shutil.copyfileobj(source, target)
-                        return os.path.join(temp_dump_folder, 'DDRCS0.BIN')
-                else:
-                    print('>>>> NO DDRCS0.BIN found in zip file')
-                    return 0
-    else:
-        return bin_file_location
+                        if match_file != match_list[0]:
+                            return os.path.join(temp_dump_folder, os.path.basename(file))
+
+
+            print('>>>> NO Match file found in zip file')
+            return 0
 
 
 def search_radio_version(BIN_file_location):

@@ -41,15 +41,15 @@ if Radio_version == 0:
     # Input is elf file location
     if os.path.splitext(Radio_version)[1] == '.elf':
         ELF_file_location = Radio_version
-    # Input is numbical radio version
+
+else:
+    # create a search instance
+    elf = Search_module.Elf_search(Radio_version)
+    # Search internal ELF first, If local Search fail, Search remote dir by release ver
+    if elf.locally() == 0:
+        ELF_file_location = elf.remotely()
     else:
-        # create a search instance
-        elf = Search_module.Elf_search(Radio_version)
-        # Search internal ELF first, If local Search fail, Search remote dir by release ver
-        if elf.locally() == 0:
-            ELF_file_location = elf.remotely()
-        else:
-            ELF_file_location = elf.elf_loc
+        ELF_file_location = elf.elf_loc
 
 if ELF_file_location == 0:
     print('>> Fail to find the ELF')

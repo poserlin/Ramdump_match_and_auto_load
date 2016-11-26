@@ -175,11 +175,17 @@ def search_radio_version(BIN_file_location):
         # Search SSR dump radio version for special mem address
         if fnmatch.fnmatch(os.path.basename(BIN_file_location), 'ramdump_modem_*'):
             # for SSR dump, move index to (0x0247395c) to get the radio version
-            dump_file.seek(0x0247395c)
-            Radio_version = dump_file.read(22).decode('ascii')
-            if isinstance(Radio_version, str):
-                print('>>>> Radio found within Bin:', Radio_version)
-                return Radio_version
+            for possible_location in [0x0247495c, 0x0247395c]:
+                dump_file.seek(possible_location)
+                try:
+                    Radio_version = dump_file.read(22).decode('ascii')
+                    if isinstance(Radio_version, str) and Radio_version.isprintable():
+                        print('>>>> Radio found within Bin:', Radio_version)
+                        print (len(Radio_version))
+                        return Radio_version
+                except:
+                    pass
+
         else:
             while found < 2:
                 line = dump_file.readline()

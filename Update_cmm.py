@@ -70,7 +70,7 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
     replace_out_loadsim = ['', '&DDRCS0_FILENAME="' + BIN_file_location + '"',
                            'do std_loadsyms_mpss_poser_out &logpath',
                            'v.write #1 "qc_image_version_string = " %STanDard %string coredump.image.qc_image_version_string',
-                           'v.write #1 "aux_msg = " %STanDard %string coredump.err.aux_msg',
+                           'v.write #1 "coredump.err.aux_msg = " %STanDard %string coredump.err.aux_msg',
                            'do recovery_f3_htc_out']
 
     replace_in_loadsim_SSR = ['DIALOG.FILE *.bin', 'ENTRY &DDRCS0_FILENAME',
@@ -83,7 +83,7 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
                                '', '&SMEM_log="'+BIN_2_smem(BIN_file_location)+'"',
                                'do std_loadsyms_mpss_poser_out &logpath',
                                'v.write #1 "qc_image_version_string = " %STanDard %string coredump.image.qc_image_version_string',
-                               'v.write #1 "aux_msg = " %STanDard %string coredump.err.aux_msg',
+                               'v.write #1 "coredump.err.aux_msg = " %STanDard %string coredump.err.aux_msg',
                                'do recovery_f3_htc_out']
 
     replace_in_loadsyms = ['DIALOG.FILE "&filepath/*&RootElfSuffix"', 'ENTRY &rvalue_elffile',

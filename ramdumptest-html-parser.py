@@ -67,12 +67,27 @@ else:
         print('>>>> Zip everything for case#', case_number)
 
         os.chdir(os.path.dirname(BIN_file_location))
+
+        def tryread_coredump(line):
+            try:
+                parm = line.rstrip().split('= ')[1]
+            except:
+                parm = ''
+            return parm
+
         with open('coredump.txt', 'r') as input_file:
             for line in input_file:
                 if 'coredump.err.filename = ' in line:
-                    crash_filename = line.rstrip().split('= ')[1]
-                if 'coredump.err.linenum' in line:
-                    crash_fileline = line.rstrip().split('= ')[1]
+                    crash_filename = tryread_coredump(line)
+                elif 'coredump.err.linenum = ' in line:
+                    crash_fileline = tryread_coredump(line)
+                elif 'coredump.err.aux_msg = ' in line:
+                    crash_aux_msg = tryread_coredump(line)
+                elif 'coredump.err.message = ' in line:
+                    crash_message = tryread_coredump(line)
+
+        with open('coredump.txt', 'a') as input_file:
+            input_file.write('\n'+'Crash on '+ crash_filename +'#'+crash_fileline+': '+crash_message+' "'+crash_aux_msg+'"')
 
         case_zip_file = zipfile.ZipFile('case' + case_number + '@' + crash_filename + '#' + crash_fileline + '.zip',
                                         mode='w', compression=zipfile.ZIP_DEFLATED)

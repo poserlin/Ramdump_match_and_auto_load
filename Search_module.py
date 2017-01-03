@@ -93,8 +93,8 @@ def search_elf_remote(radio_version):
                           os.path.splitext(os.path.basename(elf_file_remote_location))[1]
         local_elf_file_location = os.path.join(os.path.join(Temp_Elf_folder, full_radio_version), elf_file_rename)
 
-        if not os.path.exists(os.path.dirname(local_elf_file_location)):
-            os.mkdir(os.path.dirname(local_elf_file_location))
+        if not os.path.exists(local_elf_file_location):
+            os.mkdirs(os.path.dirname(local_elf_file_location))
 
         print('>> Found, Copy file from SSD server......', )
         shutil.copy(elf_file_remote_location, local_elf_file_location)

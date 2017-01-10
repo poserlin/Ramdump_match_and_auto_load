@@ -152,7 +152,7 @@ def search_bin(bin_file_location):
                                                     os.path.splitext(os.path.basename(bin_file_location))[0])
                     print('>>>> BIN found in ZIP, unzipping to {temp_dump_location} ....'.format(
                         temp_dump_location=temp_dump_folder))
-                    if os.path.isdir(os.path.splitext(temp_dump_folder)[0]) == 0:
+                    if os.path.isdir(temp_dump_folder) == 0:
                         os.makedirs(temp_dump_folder)
                     source = zip_read.open(file)
                     target = open(os.path.join(temp_dump_folder, os.path.basename(file)), 'wb')

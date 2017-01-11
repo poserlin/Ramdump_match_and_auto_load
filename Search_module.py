@@ -97,7 +97,7 @@ def search_elf_remote(radio_version):
         local_msg_hash_file_location = os.path.join(os.path.join(Temp_Elf_folder, full_radio_version), os.path.basename(msg_hash_file))
 
         if not os.path.exists(local_elf_file_location):
-            os.mkdirs(os.path.dirname(local_elf_file_location))
+            os.makedirs(os.path.dirname(local_elf_file_location))
 
         print('>> Found, Copy file from SSD server......', )
         shutil.copy(elf_file_remote_location, local_elf_file_location)
@@ -155,8 +155,12 @@ def search_bin(bin_file_location):
                                                     os.path.splitext(os.path.basename(bin_file_location))[0])
                     print('>>>> BIN found in ZIP, unzipping to {temp_dump_location} ....'.format(
                         temp_dump_location=temp_dump_folder))
-                    if os.path.isdir(os.path.splitext(temp_dump_folder)[0]) == 0:
-                        os.mkdir(os.path.splitext(temp_dump_folder)[0])
+                    if os.path.isdir(temp_dump_folder) == 0:
+                        os.makedirs(temp_dump_folder)
+                    else:
+                        print('>>>> already unzip on '+ temp_dump_folder)
+                        return 0
+                    
                     source = zip_read.open(file)
                     target = open(os.path.join(temp_dump_folder, os.path.basename(file)), 'wb')
                     with source, target:

@@ -57,7 +57,7 @@ else:
 
 
     # change to correct dir
-    os.chdir(Codebase_root_folder + Update_cmm.cmm_path)
+    os.chdir(Codebase_root_folder + r'\common\Core\tools\cmm\\')
 
     print('>> Loading Ramdump by T32......')
     os.system(T32_full_path + ' -s ' + Update_cmm.update_all_cmm(BIN_file_location, ELF_file_location))
@@ -86,6 +86,8 @@ else:
                 elif 'coredump.err.message = ' in line:
                     crash_message = tryread_coredump(line)
 
+        case_zip_file.write('_F3log\orig_modem_proc_img_8998_f3log.txt')
+
         with open('coredump.txt', 'a') as input_file:
             input_file.write('\n'+'Crash on '+ crash_filename +'#'+crash_fileline+': '+crash_message+' "'+crash_aux_msg+'"')
 
@@ -93,8 +95,10 @@ else:
                                         mode='w', compression=zipfile.ZIP_DEFLATED)
         case_zip_file.write('f3log.txt')
         case_zip_file.write('coredump.txt')
+        msg_hash_qsr = Search_module.search_msg_hash(os.path.dirname(ELF_file_location))
 
         case_zip_file.write(BIN_file_location, os.path.basename(BIN_file_location))
         case_zip_file.write(ELF_file_location, os.path.basename(ELF_file_location))
+        case_zip_file.write(msg_hash_qsr, os.path.basename(msg_hash_qsr))
         case_zip_file.close()
     os.system('explorer ' + os.path.dirname(BIN_file_location))

@@ -1,5 +1,7 @@
 from distutils.core import setup
 import py2exe
+AppVers = "8998.0.0.1"
+AppName = "8998 Auto Ramdump"
 
 setup(
     options={'py2exe': {

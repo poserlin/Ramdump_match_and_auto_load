@@ -58,8 +58,9 @@ def search_msg_hash(dirPath):
 def search_elf(search_dir, radio_version):
     for dirPath, dirNames, fileNames in os.walk(search_dir):
         for x in filter(lambda x: fnmatch.fnmatch(x, '*' + radio_version + '*.img'), fileNames):
-            full_radio_version = x.split('_')[1]
-            for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'M*.elf'), os.listdir(dirPath)):
+            full_radio_version = x.split('_')[2]
+            print(full_radio_version)
+            for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'orig_MODEM_PROC_IMG*.elf'), os.listdir(dirPath)):
                 elf_file = os.path.join(dirPath, elf)
             for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'msg_hash_*.qsr4'), os.listdir(dirPath)):
                 msg_hash_file = os.path.join(dirPath, msg_hash)

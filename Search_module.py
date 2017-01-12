@@ -68,7 +68,7 @@ def search_elf(search_dir, radio_version):
 
                 return elf_file, full_radio_version, msg_hash_file
 
-# Define the Remote Search
+# Define the Remote Search, assume different build have diff build
 def search_elf_remote(radio_version):
     print('>> Searching Remotely......', end='')
     # Search remote dir by release ver
@@ -96,8 +96,11 @@ def search_elf_remote(radio_version):
         local_elf_file_location = os.path.join(os.path.join(Temp_Elf_folder, full_radio_version), elf_file_rename)
         local_msg_hash_file_location = os.path.join(os.path.join(Temp_Elf_folder, full_radio_version), os.path.basename(msg_hash_file))
 
-        if not os.path.exists(local_elf_file_location):
+        if not os.path.isdir(os.path.dirname(local_elf_file_location)):
             os.makedirs(os.path.dirname(local_elf_file_location))
+        else:
+            pass
+
 
         print('>> Found, Copy file from SSD server......', )
         shutil.copy(elf_file_remote_location, local_elf_file_location)

@@ -192,7 +192,6 @@ def search_radio_version(BIN_file_location):
                     Radio_version = dump_file.read(22).decode('ascii')
                     if isinstance(Radio_version, str) and Radio_version.isprintable():
                         print('>>>> Radio found within Bin:', Radio_version)
-                        print (len(Radio_version))
                         return Radio_version
                 except:
                     pass

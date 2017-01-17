@@ -58,10 +58,29 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
     # Replace string
     replace_in_load_ramdump = ['DIALOG.FILE *\n', 'ENTRY &ramdump_file',
                                'DIALOG.FILE *.elf\n', 'ENTRY &elf',
-                               'do std_loadsim', 'htc_tool_menu.cmm']
+                               'do std_loadsim',
+                               r'IF (OS.FILE(./htc/htc_tool_menu.cmm))']
     replace_ou_load_ramdump = ['', '&ramdump_file="' + BIN_file_location + '"',
                                 '', '&elf="' + ELF_file_location + '"',
-                                'do std_loadsim_poser_out', 'htc_tool_menu_poser_out.cmm']
+                                'do std_loadsim_poser_out',
+                               'v.v coredump %STanDard %string coredump.err.message %Hex coredump.err.param %STanDard %string coredump.err.filename %STanDard %Decimal coredump.err.linenum %STanDard %string htc_radio_version %STanDard %string htc_radio_build_date' + '\n'+
+                               'IF (!OS.FILE(&logpath/coredump.txt))'+'\n(\n'+
+                               '  open #1 &logpath/coredump.txt /create\n'+
+                               '  v.write #1 "coredump.err.message := " %STanDard %string coredump.err.message\n'+
+                               '  v.write #1 "coredump.err.param := " %Hex coredump.err.param\n'+
+                               '  v.write #1 "coredump.err.filename := " %STanDard %string coredump.err.filename\n'+
+                               '  v.write #1 "coredump.err.linenum := " %STanDard %Decimal coredump.err.linenum\n'+
+                               '  v.write #1 "aux_msg := " %STanDard %string coredump.err.aux_msg\n'+
+                               '  v.write #1 "htc_radio_version := " %STanDard %string htc_radio_version\n'+
+                               '  v.write #1 "htc_radio_build_date := " %STanDard %string htc_radio_build_date\n'+
+                               '  v.write #1 "qc_image_version_string := " %STanDard %string coredump.image.qc_image_version_string\n'+
+                               '  close #1\n)\n'+
+
+
+
+
+
+                               'IF (OS.FILE(./htc/htc_tool_menu_poser_out.cmm))']
 
     replace_in_loadsim_SSR = ['RETURN &load_wlan_menu_option &extraoption']
     replace_ou_loadsim_SSR = ['']

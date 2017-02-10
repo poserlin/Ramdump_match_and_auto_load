@@ -109,7 +109,7 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
         print('SSR dump')
         update_cmm(read_loadsim_SSR_cmm_all, writ_loadsim_SSR_cmm_all, replace_in_loadsim_SSR, replace_ou_loadsim_SSR)
         return writ_load_ramdump_cmm_all
-    # elif fnmatch.fnmatch(os.path.basename(BIN_file_location), 'DDRCS0' + '*'):
-    #     print('Fulldump')
-    #     update_cmm(read_loadsim_cmm_all, write_loadsim_cmm_all, replace_in_loadsim, replace_out_loadsim)
-    #     return write_loadsim_cmm_allread_loadsim_SSR_cmm_all
+    elif fnmatch.fnmatch(os.path.basename(BIN_file_location), 'DDRCS0' + '*'):
+        print('Fulldump')
+        update_cmm(read_loadsim_SSR_cmm_all, writ_loadsim_SSR_cmm_all, replace_in_loadsim_SSR, replace_ou_loadsim_SSR)
+        return writ_load_ramdump_cmm_all

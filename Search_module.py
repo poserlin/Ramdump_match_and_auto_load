@@ -141,7 +141,7 @@ def search_elf_local(radio_version):
 
 # Define the Zip BIN file search
 def search_bin(bin_file_location):
-    match_list = ['*ramdump_smem_*',  '*ramdump_modem_*', '*DDRCS0.BIN']
+    match_list = ['*ramdump_smem_*',  '*ramdump_modem_*', '*DDRCS0.BIN', '*OCIMEM.BIN']
 
     for match_file in match_list:
         if fnmatch.fnmatch(os.path.basename(bin_file_location), match_file):
@@ -197,19 +197,15 @@ def search_radio_version(BIN_file_location):
                         return Radio_version
                 except:
                     pass
-
+        # Search Full Dump
         else:
-            while found < 2:
-                line = dump_file.readline()
-                if not line:
-                    break
+            for possible_location in [0x06010928]:
+                dump_file.seek(possible_location)
                 try:
-                    if 'baseband: version found:' in line.decode('ascii'):
-                        Radio_version = line.decode('ascii').rstrip().split('version found: ')[1]
-                        found += 1
-                        if found == 2:
-                            print('>>>> Radio found within Bin:', Radio_version)
-                            return Radio_version
+                    Radio_version = dump_file.read(22).decode('ascii')
+                    if isinstance(Radio_version, str) and Radio_version.isprintable():
+                        print('>>>> Radio found within Bin:', Radio_version)
+                        return Radio_version
                 except:
                     pass
         return 0

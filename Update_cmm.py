@@ -59,7 +59,8 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
     replace_in_load_ramdump = ['DIALOG.FILE *\n', 'ENTRY &ramdump_file',
                                'DIALOG.FILE *.elf\n', 'ENTRY &elf',
                                'do std_loadsim',
-                               r'IF (OS.FILE(./htc/htc_tool_menu.cmm))']
+                               r'IF (OS.FILE(./htc/htc_tool_menu.cmm))',
+                               'do htc/htc_tool_menu.cmm']
     replace_ou_load_ramdump = ['', '&ramdump_file="' + BIN_file_location + '"',
                                 '', '&elf="' + ELF_file_location + '"',
                                 'do std_loadsim_poser_out',
@@ -80,7 +81,8 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
 
 
 
-                               'IF (OS.FILE(./htc/htc_tool_menu_poser_out.cmm))']
+                               'IF (OS.FILE(./htc/htc_tool_menu_poser_out.cmm))',
+                               'do htc/htc_tool_menu_poser_out.cmm']
 
     replace_in_loadsim_SSR = ['RETURN &load_wlan_menu_option &extraoption']
     replace_ou_loadsim_SSR = ['']

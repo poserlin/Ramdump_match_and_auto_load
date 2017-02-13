@@ -1,6 +1,6 @@
 from distutils.core import setup
 import py2exe
-AppVers = "8998.0.0.2"
+AppVers = "8998.0.0.3"
 AppName = "8998 Auto Ramdump"
 
 setup(

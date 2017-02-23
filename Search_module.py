@@ -14,7 +14,8 @@ with open('config.txt', 'r') as config_file:
         if 'Codebase_root_folder' in line:
             Codebase_root_folder = line.rstrip().split('= ')[1]
         elif 'radio_release_root' in line:
-            radio_release_root = line.rstrip().split('= ')[1]
+            radio_release_raw = line.rstrip().split('= ')[1]
+            radio_release_all = radio_release_raw.split(',')
         elif 'T32_full_path' in line:
             T32_full_path = line.rstrip().split('= ')[1]
         elif 'local_temp_dump_folder' in line:
@@ -72,13 +73,14 @@ def search_elf_remote(radio_version):
     # Search remote dir by release ver
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
-        for dir_1 in os.listdir(radio_release_root):
-            if re.search(radio_version_list[1], dir_1):
-                new_path = os.path.join(radio_release_root, dir_1)
-                for dir_2 in os.listdir(new_path):
-                    if re.search(radio_version_list[2], dir_2):
-                        new_path = os.path.join(new_path, dir_2)
-                        elf_file_remote_location, full_radio_version = search_elf(new_path, radio_version)
+        for radio_release_root in radio_release_all:
+            for dir_1 in os.listdir(radio_release_root):
+                if re.search(radio_version_list[1], dir_1):
+                    new_path = os.path.join(radio_release_root, dir_1)
+                    for dir_2 in os.listdir(new_path):
+                        if re.search(radio_version_list[2], dir_2):
+                            new_path = os.path.join(new_path, dir_2)
+                            elf_file_remote_location, full_radio_version = search_elf(new_path, radio_version)
 
     # if Fail, Search all dir from root, support partial Radio ver search
     if elf_file_remote_location == 0:

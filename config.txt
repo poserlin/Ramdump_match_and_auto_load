@@ -1,4 +1,4 @@
 Codebase_root_folder = D:\codebase\8996\8996_AND_LA_1.9_12301_UMTS_29.01_0726_c0e35ff_189
-radio_release_root = \\10.116.56.36\Release
+radio_release_root = \\ssd_cdma_10\Release,\\ssd_cdma_12\Release
 T32_full_path = D:\M1\T32_D\bin\windows64\t32mqdsp6
 local_temp_dump_folder = D:\M1\dump

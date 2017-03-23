@@ -102,7 +102,10 @@ def search_elf_remote(radio_version):
 
 
         print('>> Found, Copy file from SSD server......', )
-        shutil.copy(elf_file_remote_location, local_elf_file_location)
+        # shutil.copy(elf_file_remote_location, local_elf_file_location)
+        with open(elf_file_remote_location, 'rb') as fin:
+            with open(local_elf_file_location, 'wb') as fout:
+                shutil.copyfileobj(fin, fout, 16*1024*1024)
         shutil.copy(ELF_2_msghash(elf_file_remote_location), ELF_2_msghash(local_elf_file_location))
 
         # checking the file size, if match, add _fin in the file name.

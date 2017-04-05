@@ -61,7 +61,7 @@ def search_elf(search_dir, radio_version):
     for dirPath, dirNames, fileNames in os.walk(search_dir):
         for x in filter(lambda x: fnmatch.fnmatch(x, '*' + radio_version + '*.img'), fileNames):
             full_radio_version = x.split('_')[1]
-            for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'M*.elf'), os.listdir(dirPath)):
+            for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'orig_M*.elf'), os.listdir(dirPath)):
                 elf_file = os.path.join(dirPath, elf)
                 print('Match ELF is \r\n %s' % elf_file)
                 return elf_file, full_radio_version

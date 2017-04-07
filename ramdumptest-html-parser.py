@@ -31,7 +31,6 @@ input_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
 # Try to find the BIN from zip file
 BIN_file_location = Search_module.search_bin(input_file_location)
 
-print(BIN_file_location)
 # Try to read the Radio_version from DUMP
 Radio_version = Search_module.search_radio_version(BIN_file_location)
 

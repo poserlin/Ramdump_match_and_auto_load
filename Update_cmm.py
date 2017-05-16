@@ -99,10 +99,10 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
 
 
     if fnmatch.fnmatch(os.path.basename(BIN_file_location), 'ramdump_modem_' + '*'):
-        print('SSR dump')
+        print('>> SSR dump')
         update_cmm(read_loadsim_SSR_cmm_all, writ_loadsim_SSR_cmm_all, replace_in_loadsim_SSR, replace_ou_loadsim_SSR)
         return writ_load_ramdump_cmm_all
     elif fnmatch.fnmatch(os.path.basename(BIN_file_location), 'DDRCS0' + '*'):
-        print('Fulldump')
+        print('>> Fulldump')
         update_cmm(read_loadsim_SSR_cmm_all, writ_loadsim_SSR_cmm_all, replace_in_loadsim_SSR, replace_ou_loadsim_SSR)
         return writ_load_ramdump_cmm_all

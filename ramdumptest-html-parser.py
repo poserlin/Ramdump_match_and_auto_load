@@ -49,7 +49,7 @@ else:
     # change to correct dir
     os.chdir(read_config.Codebase_root_folder + r'\common\Core\tools\cmm\\')
 
-    print('>> Loading Ramdump by T32......')
+    print('>>>> Loading Ramdump by T32......')
     os.system(read_config.T32_full_path + ' -s ' + Update_cmm.update_all_cmm(BIN_file_location, ELF_file_location))
 
     case_number = input(">> Input Case number for zip file, empty for skip the zip process: \r\n")

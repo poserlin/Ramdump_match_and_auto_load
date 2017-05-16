@@ -26,12 +26,14 @@ Radio_version = Search_module.search_radio_version(BIN_file_location)
 if Radio_version == 0:
     # Radio version not found in BIN file
     Radio_version = input("Plz input Radio version or ELF file: \r\n")
-    # Input is elf file location
-    if os.path.splitext(Radio_version)[1] == '.elf':
-        ELF_file_location = Radio_version
 
 # determine codebase
 read_config.read_from_file(Radio_version)
+
+# Input is elf file location
+if os.path.splitext(Radio_version)[1] == '.elf':
+    ELF_file_location = Radio_version
+# Input is Radio version
 else:
     # create a search instance
     elf = Search_module.Elf_search(Radio_version)
@@ -44,8 +46,6 @@ else:
 if ELF_file_location == 0:
     print('>> Fail to find the ELF')
 else:
-
-
     # change to correct dir
     os.chdir(read_config.Codebase_root_folder + r'\common\Core\tools\cmm\\')
 

@@ -132,48 +132,56 @@ def search_bin(bin_file_location):
     match_list_sub = ['*ramdump_smem_*', '*OCIMEM.BIN']
 
     for match_file in match_list:
+        # Input file is full or online ramdump directly
         if fnmatch.fnmatch(os.path.basename(bin_file_location), match_file):
             return bin_file_location
+        # Input file is zip file
+        elif zipfile.is_zipfile(bin_file_location):
+            # zip file found, try tp extract dump from it
+            with zipfile.ZipFile(bin_file_location, 'r') as zip_read:
 
+                temp_dump_folder = os.path.join(read_config.local_temp_dump_folder,
+                                                os.path.splitext(os.path.basename(bin_file_location))[0])
 
-    if zipfile.is_zipfile(bin_file_location):
-        # zip file found, try tp extract the DDRCSO.BIN from it
-        with zipfile.ZipFile(bin_file_location, 'r') as zip_read:
-            # for Matching file in zip_read.namelist():
-            for match_file in match_list_sub + match_list:
-                for file in filter(lambda file: fnmatch.fnmatch(file, match_file), zip_read.namelist()):
-                    temp_dump_folder = os.path.join(local_temp_dump_folder,
-                                                    os.path.splitext(os.path.basename(bin_file_location))[0])
-                        temp_dump_location=temp_dump_folder))
-                    if os.path.isdir(temp_dump_folder):
-                        if os.path.isfile(os.path.join(temp_dump_folder, os.path.basename(file))) and match_file in match_list:
-                            if continous_go.lower() == 'y':
+                # for Matching file in zip_read.namelist():
+                for match_file in match_list_sub + match_list:
+                    for file in filter(lambda file: fnmatch.fnmatch(file, match_file), zip_read.namelist()):
+
                         print('>> BIN found in ZIP, unzipping to {temp_dump_location} ....'.format(
+                            temp_dump_location=temp_dump_folder))
+                        if os.path.isdir(temp_dump_folder):
+                            if os.path.isfile(os.path.join(temp_dump_folder,
+                                                           os.path.basename(file))) and match_file in match_list:
                                 continous_go = input('>> Already unzip on ' + temp_dump_folder + '\n' + '>> Need to process Y/N?' + '\n')
+                                if continous_go.lower() == 'y':
+                                    return os.path.join(temp_dump_folder, os.path.basename(file))
+                                else:
+                                    quit()
+                        else:
+                            os.makedirs(temp_dump_folder)
+
+                        source = zip_read.open(file)
+                        target = open(os.path.join(temp_dump_folder, os.path.basename(file)), 'wb')
+                        with source, target:
+                            shutil.copyfileobj(source, target)
+                            if match_file in match_list:
                                 return os.path.join(temp_dump_folder, os.path.basename(file))
-                            else:
-                                quit()
-                    else:
-                        os.makedirs(temp_dump_folder)
-                    
-                    source = zip_read.open(file)
-                    target = open(os.path.join(temp_dump_folder, os.path.basename(file)), 'wb')
-                    with source, target:
-                        shutil.copyfileobj(source, target)
-                        if match_file in match_list:
-                            return os.path.join(temp_dump_folder, os.path.basename(file))
 
 
                 print('>> NO Match file found in zip file')
-            print('>> Input not Zip nor *ramdump_modem_*')
-            return 0
+                return 0
 
+        #Input file not Zip nor dump file
+        else:
+            print('>> Input not Zip nor dumpfile')
+            return 0
 
 def search_radio_version(BIN_file_location):
     found = 0
     # input Bin file are not valid
     if BIN_file_location == 0:
         return 0
+
     with open(BIN_file_location, 'rb') as dump_file:
         # Search SSR dump radio version for special mem address
         if fnmatch.fnmatch(os.path.basename(BIN_file_location), 'ramdump_modem_*'):

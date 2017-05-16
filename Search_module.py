@@ -48,13 +48,13 @@ def search_elf(search_dir, radio_version):
                 elf_file = os.path.join(dirPath, elf)
             for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'msg_hash_*.qsr4'), os.listdir(dirPath)):
                 msg_hash_file = os.path.join(dirPath, msg_hash)
-                print('Match ELF is \r\n %s' % elf_file)
+                print('>> Match ELF in \r\n %s' % elf_file)
 
                 return elf_file, full_radio_version, msg_hash_file
 
 # Define the Remote Search, assume different build have diff build
 def search_elf_remote(radio_version):
-    print('>> Searching Remotely......', end='')
+    print('>>>> Searching Remotely......', end='')
     # Search remote dir by release ver
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
@@ -86,7 +86,7 @@ def search_elf_remote(radio_version):
             pass
 
 
-        print('>> Found, Copy file from SSD server......', )
+        print('>>>> Found, Copy file from SSD server......', )
         # shutil.copy(elf_file_remote_location, local_elf_file_location)
         with open(elf_file_remote_location, 'rb') as fin:
             with open(local_elf_file_location, 'wb') as fout:
@@ -120,9 +120,9 @@ def search_elf_local(radio_version):
         for x in fileNames:
             if fnmatch.fnmatch(x, '*' + radio_version_part + '_fin.elf'):
                 elf_file = os.path.join(dirPath, x)
-                print('>>>> Match ELF locally in %s' % dirPath)
+                print('>> Match ELF locally in %s' % dirPath)
                 return elf_file
-    print('>>>> ELF Not found locally')
+    print('>> ELF Not found locally')
     return 0
 
 
@@ -144,12 +144,12 @@ def search_bin(bin_file_location):
                 for file in filter(lambda file: fnmatch.fnmatch(file, match_file), zip_read.namelist()):
                     temp_dump_folder = os.path.join(local_temp_dump_folder,
                                                     os.path.splitext(os.path.basename(bin_file_location))[0])
-                    print('>>>> BIN found in ZIP, unzipping to {temp_dump_location} ....'.format(
                         temp_dump_location=temp_dump_folder))
                     if os.path.isdir(temp_dump_folder):
                         if os.path.isfile(os.path.join(temp_dump_folder, os.path.basename(file))) and match_file in match_list:
-                            continous_go = input('>>>> Already unzip on ' + temp_dump_folder + '\n' + '>>>> Need to process Y/N?' + '\n')
                             if continous_go.lower() == 'y':
+                        print('>> BIN found in ZIP, unzipping to {temp_dump_location} ....'.format(
+                                continous_go = input('>> Already unzip on ' + temp_dump_folder + '\n' + '>> Need to process Y/N?' + '\n')
                                 return os.path.join(temp_dump_folder, os.path.basename(file))
                             else:
                                 quit()
@@ -164,7 +164,8 @@ def search_bin(bin_file_location):
                             return os.path.join(temp_dump_folder, os.path.basename(file))
 
 
-            print('>>>> NO Match file found in zip file')
+                print('>> NO Match file found in zip file')
+            print('>> Input not Zip nor *ramdump_modem_*')
             return 0
 
 
@@ -182,7 +183,7 @@ def search_radio_version(BIN_file_location):
                 try:
                     Radio_version = dump_file.read(20).decode('ascii')
                     if isinstance(Radio_version, str) and Radio_version.isprintable():
-                        print('>>>> Radio found within Bin:', Radio_version)
+                        print('>> Radio found within Bin:', Radio_version)
                         return Radio_version
                 except:
                     pass
@@ -193,7 +194,7 @@ def search_radio_version(BIN_file_location):
                 try:
                     Radio_version = dump_file.read(20).decode('ascii')
                     if isinstance(Radio_version, str) and Radio_version.isprintable():
-                        print('>>>> Radio found within Bin:', Radio_version)
+                        print('>> Radio found within Bin:', Radio_version)
                         return Radio_version
                 except:
                     pass

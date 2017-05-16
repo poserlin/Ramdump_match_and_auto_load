@@ -4,23 +4,7 @@ import os
 import re
 import shutil
 import zipfile
-
-# ==========================================================
-# User Variable
-# ==========================================================
-
-with open('config.txt', 'r') as config_file:
-    for line in config_file:
-        if 'Codebase_root_folder' in line:
-            Codebase_root_folder = line.rstrip().split('= ')[1]
-        elif 'radio_release_root' in line:
-            radio_release_root = line.rstrip().split('= ')[1]
-        elif 'T32_full_path' in line:
-            T32_full_path = line.rstrip().split('= ')[1]
-        elif 'local_temp_dump_folder' in line:
-            local_temp_dump_folder = line.rstrip().split('= ')[1]
-            Temp_Elf_folder = os.path.join(local_temp_dump_folder, 'ELF_temp')
-
+import read_config
 
 # ==========================================================
 # Class declaration
@@ -74,9 +58,9 @@ def search_elf_remote(radio_version):
     # Search remote dir by release ver
     radio_version_list = radio_version.split('-')
     if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
-        for dir_1 in os.listdir(radio_release_root):
+        for dir_1 in os.listdir(read_config.radio_release_root):
             if re.search(radio_version_list[1], dir_1):
-                new_path = os.path.join(radio_release_root, dir_1)
+                new_path = os.path.join(read_config.radio_release_root, dir_1)
                 for dir_2 in os.listdir(new_path):
                     if re.search(radio_version_list[2], dir_2):
                         new_path = os.path.join(new_path, dir_2)
@@ -85,7 +69,7 @@ def search_elf_remote(radio_version):
     # if Fail, Search all dir from root, support partial Radio ver search
     if elf_file_remote_location == 0:
         # print('Full search from root dir due to partial Radio_ver')
-        elf_file_remote_location, full_radio_version, msg_hash_file = search_elf(radio_release_root, radio_version)
+        elf_file_remote_location, full_radio_version, msg_hash_file = search_elf(read_config.radio_release_root, radio_version)
 
     # if Found, copy ELF from remote server to local_temp_elf_folder
     if elf_file_remote_location != 0:
@@ -93,8 +77,8 @@ def search_elf_remote(radio_version):
         elf_file_rename = os.path.splitext(os.path.basename(elf_file_remote_location))[0] + '_' + radio_version_list[
             2] + \
                           os.path.splitext(os.path.basename(elf_file_remote_location))[1]
-        local_elf_file_location = os.path.join(os.path.join(Temp_Elf_folder, full_radio_version), elf_file_rename)
-        local_msg_hash_file_location = os.path.join(os.path.join(Temp_Elf_folder, full_radio_version), os.path.basename(msg_hash_file))
+        local_elf_file_location = os.path.join(os.path.join(read_config.Temp_Elf_folder, full_radio_version), elf_file_rename)
+        local_msg_hash_file_location = os.path.join(os.path.join(read_config.Temp_Elf_folder, full_radio_version), os.path.basename(msg_hash_file))
 
         if not os.path.isdir(os.path.dirname(local_elf_file_location)):
             os.makedirs(os.path.dirname(local_elf_file_location))
@@ -132,7 +116,7 @@ def search_elf_local(radio_version):
     else:
         radio_version_part = radio_version_list[0]
 
-    for dirPath, dirNames, fileNames in os.walk(Temp_Elf_folder):
+    for dirPath, dirNames, fileNames in os.walk(read_config.Temp_Elf_folder):
         for x in fileNames:
             if fnmatch.fnmatch(x, '*' + radio_version_part + '_fin.elf'):
                 elf_file = os.path.join(dirPath, x)

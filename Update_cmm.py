@@ -1,37 +1,8 @@
 import os
 import fnmatch
 from Search_module import search_msg_hash
-# ==========================================================
-# User Variable
-# ==========================================================
-with open('config.txt', 'r') as config_file:
-    for line in config_file:
-        if 'Codebase_root_folder' in line:
-            Codebase_root_folder = line.rstrip().split('= ')[1]
+import read_config
 
-# ==========================================================
-# Variable declaration
-# ==========================================================
-cmm_path = r'\common\Core\tools\cmm\common\msm8998\\'
-
-read_load_ramdump_cmm = r'\common\Core\tools\cmm\htc_load_ramdump.cmm'
-writ_load_ramdump_cmm = r'\common\Core\tools\cmm\htc_poser_out_load_ramdump.cmm'
-
-read_loadsim_SSR_cmm = 'std_loadsim.cmm'
-writ_loadsim_SSR_cmm = 'std_loadsim_poser_out.cmm'
-
-read_htc_tool_menu_cmm = r'\common\Core\tools\cmm\htc\htc_tool_menu.cmm'
-writ_htc_tool_menu_cmm = r'\common\Core\tools\cmm\htc\htc_tool_menu_poser_out.cmm'
-
-read_load_ramdump_cmm_all = Codebase_root_folder + read_load_ramdump_cmm
-writ_load_ramdump_cmm_all = Codebase_root_folder + writ_load_ramdump_cmm
-
-read_loadsim_SSR_cmm_all = Codebase_root_folder + cmm_path + read_loadsim_SSR_cmm
-writ_loadsim_SSR_cmm_all = Codebase_root_folder + cmm_path + writ_loadsim_SSR_cmm
-
-
-read_htc_tool_menu_cmm_all = Codebase_root_folder + read_htc_tool_menu_cmm
-writ_htc_tool_menu_cmm_all = Codebase_root_folder + writ_htc_tool_menu_cmm
 
 # ==========================================================
 # Function declaration
@@ -54,6 +25,28 @@ def update_cmm(read_cmm, write_cmm, replace_target, replace_object):
 # update_cmm module
 # ==========================================================
 def update_all_cmm(BIN_file_location, ELF_file_location):
+    # ==========================================================
+    # Variable declaration
+    # ==========================================================
+    cmm_path = r'\common\Core\tools\cmm\common\msm8998\\'
+
+    read_load_ramdump_cmm = r'\common\Core\tools\cmm\htc_load_ramdump.cmm'
+    writ_load_ramdump_cmm = r'\common\Core\tools\cmm\htc_poser_out_load_ramdump.cmm'
+
+    read_loadsim_SSR_cmm = 'std_loadsim.cmm'
+    writ_loadsim_SSR_cmm = 'std_loadsim_poser_out.cmm'
+
+    read_htc_tool_menu_cmm = r'\common\Core\tools\cmm\htc\htc_tool_menu.cmm'
+    writ_htc_tool_menu_cmm = r'\common\Core\tools\cmm\htc\htc_tool_menu_poser_out.cmm'
+
+    read_load_ramdump_cmm_all = read_config.Codebase_root_folder + read_load_ramdump_cmm
+    writ_load_ramdump_cmm_all = read_config.Codebase_root_folder + writ_load_ramdump_cmm
+
+    read_loadsim_SSR_cmm_all = read_config.Codebase_root_folder + cmm_path + read_loadsim_SSR_cmm
+    writ_loadsim_SSR_cmm_all = read_config.Codebase_root_folder + cmm_path + writ_loadsim_SSR_cmm
+
+    read_htc_tool_menu_cmm_all = read_config.Codebase_root_folder + read_htc_tool_menu_cmm
+    writ_htc_tool_menu_cmm_all = read_config.Codebase_root_folder + writ_htc_tool_menu_cmm
 
     # Replace string
     replace_in_load_ramdump = ['DIALOG.FILE *\n', 'ENTRY &ramdump_file',

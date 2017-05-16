@@ -2,18 +2,7 @@ import os
 import zipfile
 import Search_module
 import Update_cmm
-
-# ==========================================================
-# User Variable
-# ==========================================================
-
-
-with open('config.txt', 'r') as config_file:
-    for line in config_file:
-        if 'Codebase_root_folder' in line:
-            Codebase_root_folder = line.rstrip().split('= ')[1]
-        elif 'T32_full_path' in line:
-            T32_full_path = line.rstrip().split('= ')[1]
+import read_config
 
 
 # ==========================================================
@@ -42,6 +31,8 @@ if Radio_version == 0:
     if os.path.splitext(Radio_version)[1] == '.elf':
         ELF_file_location = Radio_version
 
+# determine codebase
+read_config.read_from_file(Radio_version)
 else:
     # create a search instance
     elf = Search_module.Elf_search(Radio_version)
@@ -57,10 +48,10 @@ else:
 
 
     # change to correct dir
-    os.chdir(Codebase_root_folder + r'\common\Core\tools\cmm\\')
+    os.chdir(read_config.Codebase_root_folder + r'\common\Core\tools\cmm\\')
 
     print('>> Loading Ramdump by T32......')
-    os.system(T32_full_path + ' -s ' + Update_cmm.update_all_cmm(BIN_file_location, ELF_file_location))
+    os.system(read_config.T32_full_path + ' -s ' + Update_cmm.update_all_cmm(BIN_file_location, ELF_file_location))
 
     case_number = input(">> Input Case number for zip file, empty for skip the zip process: \r\n")
     if case_number != '':

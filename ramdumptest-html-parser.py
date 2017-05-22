@@ -3,7 +3,8 @@ import zipfile
 import Search_module
 import Update_cmm
 import read_config
-
+import getopt
+import sys
 
 # ==========================================================
 # Variable declaration
@@ -11,22 +12,46 @@ import read_config
 
 ELF_file_location = 0
 Radio_version = 0
+input_file_location = 0
 # ==========================================================
 # Main function
 # ==========================================================
+#process the argument
+try:
+    opts, args = getopt.getopt(sys.argv[1:], 'd:r:h', ['dump_file=', 'radio_ver=', 'help'])
+except getopt.GetoptError:
+    # usage()
+    sys.exit(2)
 
-input_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
+for opt, arg in opts:
+    if opt in ('-h', '--help'):
+        print('-d/ --dump_file: Input dump file'+'\r\n'+
+              '-r/ --radio_ver: Input radio version' + '\r\n')
+        sys.exit(2)
+    elif opt in ('-d', '--dump_file'):
+        input_file_location = arg
+    elif opt in ('-r', '--radio_ver'):
+        Radio_version = arg
+    else:
+        # usage()
+        sys.exit(2)
 
+if input_file_location == 0:
+    input_file_location = input("Plz input DDRCS0.BIN or Zip file: \r\n")
+else:
+    print('Input file is {}'.format(input_file_location))
 # Try to find the BIN from zip file
 BIN_file_location = Search_module.search_bin(input_file_location)
 
 # Try to read the Radio_version from DUMP
-Radio_version = Search_module.search_radio_version(BIN_file_location)
-
 if Radio_version == 0:
-    # Radio version not found in BIN file
-    Radio_version = input("Plz input Radio version or ELF file: \r\n")
+    Radio_version = Search_module.search_radio_version(BIN_file_location)
 
+    if Radio_version == 0:
+        # Radio version not found in BIN file
+        Radio_version = input("Plz input Radio version or ELF file: \r\n")
+else:
+    print('Input radio version is {}'.format(input_file_location))
 # determine codebase
 read_config.read_from_file(Radio_version)
 

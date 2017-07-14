@@ -77,7 +77,7 @@ def update_all_cmm(BIN_file_location, ELF_file_location):
                               'dialog.file ramdump_smem_*.bin', 'entry &SMEM_log',
                               'do std_loadsyms_mpss &logpath',
                               'v.write #1 "RCMS_Name = " %STanDard %string htc_smem_ram.RCMS_Name',
-                              'v.write #1 "qxdm_dbg_msg = " %STanDard %string qxdm_dbg_msg',
+                              'v.write #1 "htc_rom_ver = " %STanDard %string htc_smem_ram.htc_rom_ver',
                               'GOSUB POSTMORTEM_ANALYSIS']
     replace_out_loadsim_SSR = ['', '&DDRCS0_FILENAME="' + BIN_file_location + '"',
                                '', '&SMEM_log="'+BIN_2_smem(BIN_file_location)+'"',

@@ -64,32 +64,35 @@ else:
     case_number = input(">> Input Case number for zip file, empty for skip the zip process: \r\n")
     if case_number != '':
         print('>>>> Zip everything for case#', case_number)
+        zip_filename = 'case' + case_number
 
         os.chdir(os.path.dirname(BIN_file_location))
 
-        def tryread_coredump(line):
+        def tryread_coredump(line, zip_filename):
             try:
                 parm = line.rstrip().split('= ')[1]
+                if not not parm:
+                    zip_filename += '_' + parm
             except:
                 parm = ''
-            return parm
+            return parm, zip_filename
 
         with open('coredump.txt', 'r') as input_file:
             for line in input_file:
                 if 'coredump.err.filename = ' in line:
-                    crash_filename = tryread_coredump(line)
+                    crash_filename, zip_filename = tryread_coredump(line, zip_filename)
                 elif 'coredump.err.linenum = ' in line:
-                    crash_fileline = tryread_coredump(line)
+                    crash_fileline, zip_filename = tryread_coredump(line, zip_filename)
                 elif 'coredump.err.aux_msg = ' in line:
-                    crash_aux_msg = tryread_coredump(line)
+                    crash_aux_msg, zip_filename = tryread_coredump(line, zip_filename)
                 elif 'coredump.err.message = ' in line:
-                    crash_message = tryread_coredump(line)
+                    crash_message, zip_filename = tryread_coredump(line, zip_filename)
 
         with open('coredump.txt', 'a') as input_file:
             input_file.write('\n'+'Crash on '+ crash_filename +'#'+crash_fileline+': '+crash_message+' "'+crash_aux_msg+'"')
 
-        case_zip_file = zipfile.ZipFile('case' + case_number + '@' + crash_filename + '#' + crash_fileline + '.zip',
-                                        mode='w', compression=zipfile.ZIP_DEFLATED)
+        case_zip_file = zipfile.ZipFile(zip_filename.replace(':','')+'.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
+
         case_zip_file.write('f3log.txt')
         case_zip_file.write('coredump.txt')
 

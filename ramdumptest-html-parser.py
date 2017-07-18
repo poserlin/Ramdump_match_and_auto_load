@@ -2,6 +2,7 @@ import os
 import zipfile
 import Search_module
 import Update_cmm
+import re
 
 # ==========================================================
 # User Variable
@@ -91,7 +92,7 @@ else:
         with open('coredump.txt', 'a') as input_file:
             input_file.write('\n'+'Crash on '+ crash_filename +'#'+crash_fileline+': '+crash_message+' "'+crash_aux_msg+'"')
 
-        case_zip_file = zipfile.ZipFile(zip_filename.replace(':','')+'.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
+        case_zip_file = zipfile.ZipFile(re.sub('[<>:"/\|?*]','', zip_filename)+'.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
 
         case_zip_file.write('f3log.txt')
         case_zip_file.write('coredump.txt')

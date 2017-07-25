@@ -90,7 +90,7 @@ else:
                     crash_message, zip_filename = tryread_coredump(line, zip_filename)
 
         with open('coredump.txt', 'a') as input_file:
-            input_file.write('\n'+'Crash on '+ crash_filename +'#'+crash_fileline+': '+crash_message+' "'+crash_aux_msg+'"')
+            input_file.write('\n'+'Crash on '+ zip_filename)
 
         case_zip_file = zipfile.ZipFile(re.sub('[<>:"/\|?*]','', zip_filename)+'.zip', mode='w', compression=zipfile.ZIP_DEFLATED)
 

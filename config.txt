@@ -1,5 +1,5 @@
 8998_Codebase_root_folder = D:\codebase\MSM8998_LA.1.1_0.0.043.1
 8998_local_temp_dump_folder = D:\8998\dump
 
-radio_release_root = \\ssd_cdma_12\Release
+radio_release_root = \\wsd-abs-w2b-1\8998_T\T_Radio\
 T32_full_path = D:\T32\bin\windows64\t32mqdsp6

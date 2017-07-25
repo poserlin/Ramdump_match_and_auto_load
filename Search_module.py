@@ -40,31 +40,42 @@ def search_msg_hash(dirPath):
 
 # Define the Search elf based on provide radio version
 def search_elf(search_dir, radio_version):
-    for dirPath, dirNames, fileNames in os.walk(search_dir):
-        for x in filter(lambda x: fnmatch.fnmatch(x, '*' + radio_version + '*.img'), fileNames):
-            full_radio_version = x.split('_')[2]
-            print(full_radio_version)
-            for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'orig_MODEM_PROC_IMG*.elf'), os.listdir(dirPath)):
-                elf_file = os.path.join(dirPath, elf)
-            for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'msg_hash_*.qsr4'), os.listdir(dirPath)):
-                msg_hash_file = os.path.join(dirPath, msg_hash)
-                print('>> Match ELF in \r\n %s' % elf_file)
-
-                return elf_file, full_radio_version, msg_hash_file
+    # for dirPath, dirNames, fileNames in os.walk(search_dir):
+    #     for x in filter(lambda x: fnmatch.fnmatch(x, '*' + radio_version + '*.img'), fileNames):
+    #         full_radio_version = x.split('_')[2]
+    #         print(full_radio_version)
+    #         for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'orig_MODEM_PROC_IMG*.elf'), os.listdir(dirPath)):
+    #             elf_file = os.path.join(dirPath, elf)
+    #         for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'msg_hash_*.qsr4'), os.listdir(dirPath)):
+    #             msg_hash_file = os.path.join(dirPath, msg_hash)
+    #             print('>> Match ELF in \r\n %s' % elf_file)
+    for dir_1 in os.listdir(search_dir):
+        if radio_version in dir_1:
+            dir_2 = os.path.join(read_config.radio_release_root, dir_1)
+            for dirPath, dirNames, fileNames in os.walk(dir_2):
+                for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'orig_MODEM_PROC_IMG_8998.gen.prodQ.elf'),fileNames):
+                    elf_file = os.path.join(dirPath, elf)
+                for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'qdsp6m.qdb'), fileNames):
+                    msg_hash_file = os.path.join(dirPath, msg_hash)
+                    print('>> Match ELF in \r\n %s' % elf_file)
+                    return elf_file, radio_version, msg_hash_file
 
 # Define the Remote Search, assume different build have diff build
 def search_elf_remote(radio_version):
     print('>>>> Searching Remotely......', end='')
     # Search remote dir by release ver
+    # radio_version_list = radio_version.split('-')
+    # if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
+    #     for dir_1 in os.listdir(read_config.radio_release_root):
+    #         if re.search(radio_version_list[1], dir_1):
+    #             new_path = os.path.join(read_config.radio_release_root, dir_1)
+    #             for dir_2 in os.listdir(new_path):
+    #                 if re.search(radio_version_list[2], dir_2):
+    #                     new_path = os.path.join(new_path, dir_2)
+    #                     elf_file_remote_location, full_radio_version, msg_hash_file = search_elf(new_path, radio_version)
     radio_version_list = radio_version.split('-')
-    if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
-        for dir_1 in os.listdir(read_config.radio_release_root):
-            if re.search(radio_version_list[1], dir_1):
-                new_path = os.path.join(read_config.radio_release_root, dir_1)
-                for dir_2 in os.listdir(new_path):
-                    if re.search(radio_version_list[2], dir_2):
-                        new_path = os.path.join(new_path, dir_2)
-                        elf_file_remote_location, full_radio_version, msg_hash_file = search_elf(new_path, radio_version)
+    elf_file_remote_location, full_radio_version, msg_hash_file = search_elf(read_config.radio_release_root, radio_version)
+
 
     # if Fail, Search all dir from root, support partial Radio ver search
     if elf_file_remote_location == 0:
@@ -186,10 +197,10 @@ def search_radio_version(BIN_file_location):
         # Search SSR dump radio version for special mem address
         if fnmatch.fnmatch(os.path.basename(BIN_file_location), 'ramdump_modem_*'):
             # for SSR dump, move index to (0x0247395c) to get the radio version
-            for possible_location in [0x0619055F,0x02DFB096]:
+            for possible_location in [0x0619055F, 0x02DFB096, 0x02D8B69D]:
                 dump_file.seek(possible_location)
                 try:
-                    Radio_version = dump_file.read(20).decode('ascii')
+                    Radio_version = dump_file.read(22).decode('ascii')
                     if isinstance(Radio_version, str) and Radio_version.isprintable():
                         print('>> Radio found within Bin:', Radio_version)
                         return Radio_version

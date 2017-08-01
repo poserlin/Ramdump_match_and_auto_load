@@ -218,3 +218,20 @@ def search_radio_version(BIN_file_location):
                 except:
                     pass
         return 0
+
+def search_rtel(BIN_file_location, ELF_dir):
+    Bin_dir = os.path.dirname(BIN_file_location)
+
+    for fileNames in os.listdir(ELF_dir):
+        if '.qdb' in fileNames:
+            shutil.copy(os.path.join(ELF_dir,fileNames), os.path.join(Bin_dir, fileNames))
+
+    os.chdir(Bin_dir)
+    for fileNames in os.listdir(Bin_dir):
+        if 'rtel' in fileNames:
+            os.rename(fileNames, fileNames + '.qmdl')
+            os.chdir(r'C:\Program Files (x86)\Qualcomm\QCAT 6.x\Bin')
+            # print('QCAT.exe' + ' -isf ' + os.path.join(os.path.dirname(BIN_file_location), fileNames + '.qmdl'))
+            os.system('QCAT.exe' + ' -isf ' + os.path.join(Bin_dir, fileNames + '.qmdl'))
+            return os.path.join(Bin_dir, fileNames + '.isf')
+            break

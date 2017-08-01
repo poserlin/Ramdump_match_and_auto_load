@@ -1,3 +1,4 @@
+import fnmatch
 import os
 import zipfile
 import Search_module
@@ -77,6 +78,8 @@ else:
 
     print('>>>> Loading Ramdump by T32......')
     os.system(read_config.T32_full_path + ' -s ' + Update_cmm.update_all_cmm(BIN_file_location, ELF_file_location))
+    # Try to convert rtel to isf
+    ISF_file_location = Search_module.search_rtel(BIN_file_location, os.path.dirname(ELF_file_location))
 
     case_number = input(">> Input Case number for zip file, empty for skip the zip process: \r\n")
     if case_number != '':
@@ -114,6 +117,9 @@ else:
             case_zip_file.write('_F3log\orig_modem_proc_img_8998_f3log.txt')
 
         msg_hash_qsr = Search_module.search_msg_hash(os.path.dirname(ELF_file_location))
+        for fileNames in os.listdir(os.path.dirname(BIN_file_location)):
+            if fnmatch.fnmatch(fileNames, '*' + '.isf'):
+                case_zip_file.write(fileNames)
 
         case_zip_file.write(BIN_file_location, os.path.basename(BIN_file_location))
         case_zip_file.write(ELF_file_location, os.path.basename(ELF_file_location))

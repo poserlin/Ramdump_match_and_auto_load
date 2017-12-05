@@ -34,21 +34,25 @@ def BIN_2_smem(BIN_file_location):
     return ''
 
 def search_msg_hash(dirPath):
-    for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'msg_hash_*.qsr4'), os.listdir(dirPath)):
+    for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'qdsp6m.qdb'), os.listdir(dirPath)):
         return os.path.join(dirPath, msg_hash)
 
 
 # Define the Search elf based on provide radio version
 def search_elf(search_dir, radio_version):
-    # for dirPath, dirNames, fileNames in os.walk(search_dir):
-    #     for x in filter(lambda x: fnmatch.fnmatch(x, '*' + radio_version + '*.img'), fileNames):
-    #         full_radio_version = x.split('_')[2]
-    #         print(full_radio_version)
-    #         for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'orig_MODEM_PROC_IMG*.elf'), os.listdir(dirPath)):
-    #             elf_file = os.path.join(dirPath, elf)
-    #         for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'msg_hash_*.qsr4'), os.listdir(dirPath)):
-    #             msg_hash_file = os.path.join(dirPath, msg_hash)
-    #             print('>> Match ELF in \r\n %s' % elf_file)
+    for dirPath, dirNames, fileNames in os.walk(search_dir):
+        for x in filter(lambda x: fnmatch.fnmatch(x, '*' + radio_version + '*.img'), fileNames):
+            full_radio_version = x.split('_')[2]
+            print(full_radio_version)
+            for elf in filter(lambda elf: fnmatch.fnmatch(elf, 'orig_MODEM_PROC_IMG*.elf'), os.listdir(dirPath)):
+                elf_file = os.path.join(dirPath, elf)
+            for msg_hash in filter(lambda msg_hash: fnmatch.fnmatch(msg_hash, 'msg_hash_*.qsr4'), os.listdir(dirPath)):
+                msg_hash_file = os.path.join(dirPath, msg_hash)
+                print('>> Match ELF in \r\n %s' % elf_file)
+                return elf_file, radio_version, msg_hash_file
+
+
+def search_elf_g_radio(search_dir, radio_version):
     for dir_1 in os.listdir(search_dir):
         if radio_version in dir_1:
             dir_2 = os.path.join(read_config.radio_release_root, dir_1)
@@ -64,17 +68,22 @@ def search_elf(search_dir, radio_version):
 def search_elf_remote(radio_version):
     print('>>>> Searching Remotely......', end='')
     # Search remote dir by release ver
-    # radio_version_list = radio_version.split('-')
-    # if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
-    #     for dir_1 in os.listdir(read_config.radio_release_root):
-    #         if re.search(radio_version_list[1], dir_1):
-    #             new_path = os.path.join(read_config.radio_release_root, dir_1)
-    #             for dir_2 in os.listdir(new_path):
-    #                 if re.search(radio_version_list[2], dir_2):
-    #                     new_path = os.path.join(new_path, dir_2)
-    #                     elf_file_remote_location, full_radio_version, msg_hash_file = search_elf(new_path, radio_version)
     radio_version_list = radio_version.split('-')
-    elf_file_remote_location, full_radio_version, msg_hash_file = search_elf(read_config.radio_release_root, radio_version)
+
+    # If Google radio, using search_elf_g_radio
+    if radio_version_list[0] == 'g8998':
+        elf_file_remote_location, full_radio_version, msg_hash_file = search_elf_g_radio(read_config.radio_release_root, radio_version)
+    #Elif htc radio, search SSD folder:
+    elif radio_version_list[0] == 'sdm845' or radio_version_list[0] == '8998':
+        if len(radio_version_list) == 3:  # full radio version, parser & speed up search by release version
+            for dir_1 in os.listdir(read_config.radio_release_root):
+                if re.search(radio_version_list[1], dir_1):
+                    new_path = os.path.join(read_config.radio_release_root, dir_1)
+                    for dir_2 in os.listdir(new_path):
+                        if re.search(radio_version_list[2], dir_2):
+                            new_path = os.path.join(new_path, dir_2)
+                            elf_file_remote_location, full_radio_version, msg_hash_file = search_elf(new_path, radio_version)
+
 
 
     # if Fail, Search all dir from root, support partial Radio ver search
@@ -97,7 +106,7 @@ def search_elf_remote(radio_version):
             pass
 
 
-        print('>>>> Found, Copy file from SSD server......', )
+        print('>>>> Found, Copy file from SSD server...... to %s'%local_elf_file_location)
         # shutil.copy(elf_file_remote_location, local_elf_file_location)
         with open(elf_file_remote_location, 'rb') as fin:
             with open(local_elf_file_location, 'wb') as fout:
